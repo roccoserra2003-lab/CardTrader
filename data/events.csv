@@ -1,0 +1,27 @@
+type,name,start,end,approx,source
+release,Uscita Marvel: Darkhold Destiny,2027-04-09,2027-04-09,False,scryfall
+br_window,Finestra annunci B&R dopo Marvel: Darkhold Destiny,2027-04-23,2027-05-14,True,calc
+release,Uscita Nauctis: The Sunken Realm,2027-02-05,2027-02-05,False,scryfall
+br_window,Finestra annunci B&R dopo Nauctis: The Sunken Realm,2027-02-19,2027-03-12,True,calc
+release,Uscita Star Trek,2026-11-13,2026-11-13,False,scryfall
+br_window,Finestra annunci B&R dopo Star Trek,2026-11-27,2026-12-18,True,calc
+release_other,Uscita Mystery Booster Commander Edition,2026-10-19,2026-10-19,False,scryfall
+release,Uscita Reality Fracture,2026-10-02,2026-10-02,False,scryfall
+br_window,Finestra annunci B&R dopo Reality Fracture,2026-10-16,2026-11-06,True,calc
+release,Uscita The Hobbit,2026-08-14,2026-08-14,False,scryfall
+br_window,Finestra annunci B&R dopo The Hobbit,2026-08-28,2026-09-18,True,calc
+release,Uscita Marvel Super Heroes,2026-06-26,2026-06-26,False,scryfall
+br_window,Finestra annunci B&R dopo Marvel Super Heroes,2026-07-10,2026-07-31,True,calc
+release,Uscita Secrets of Strixhaven,2026-04-24,2026-04-24,False,scryfall
+br_window,Finestra annunci B&R dopo Secrets of Strixhaven,2026-05-08,2026-05-29,True,calc
+release,Uscita Teenage Mutant Ninja Turtles,2026-03-06,2026-03-06,False,scryfall
+br_window,Finestra annunci B&R dopo Teenage Mutant Ninja Turtles,2026-03-20,2026-04-10,True,calc
+release,Uscita Lorwyn Eclipsed,2026-01-23,2026-01-23,False,scryfall
+br_window,Finestra annunci B&R dopo Lorwyn Eclipsed,2026-02-06,2026-02-27,True,calc
+release,Uscita Avatar: The Last Airbender,2025-11-21,2025-11-21,False,scryfall
+br_window,Finestra annunci B&R dopo Avatar: The Last Airbender,2025-12-05,2025-12-26,True,calc
+release,Uscita Marvel's Spider-Man,2025-09-26,2025-09-26,False,scryfall
+br_window,Finestra annunci B&R dopo Marvel's Spider-Man,2025-10-10,2025-10-31,True,calc
+release,Uscita Edge of Eternities,2025-08-01,2025-08-01,False,scryfall
+br_window,Finestra annunci B&R dopo Edge of Eternities,2025-08-15,2025-09-05,True,calc
+rotation,Rotazione Standard con Nauctis: The Sunken Realm (escono i set del 2024),2027-02-05,2027-02-05,True,calc
