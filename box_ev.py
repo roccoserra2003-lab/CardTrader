@@ -18,7 +18,7 @@ import common as C
 PRODUCTS = [
     # booster_key = nome della configurazione in MTGJSON
     # packs = bustine per box USATE SOLO SE MTGJSON non le indica (cambiano da set a set: es. 30 o 36)
-    {"label": "Play Booster Box", "booster_key": "play", "packs": 36, "name_words": ["play", "booster"]},
+    {"label": "Play Booster Box", "booster_key": "play", "packs": 36, "name_words": ["play", "booster"], "plain_fallback": True},
     {"label": "Collector Booster Box", "booster_key": "collector", "packs": 12, "name_words": ["collector", "booster"]},
 ]
 SET_TYPES = {"expansion", "core", "masters", "draft_innovation"}
@@ -112,7 +112,11 @@ def expansion_prices(expansion_id, foil):
     return prices
 
 
-def find_box_blueprint(blueprints, words):
+def find_box_blueprint(blueprints, words, plain_fallback=False):
+    """
+    Cerca il box per nome. Per il Play Booster, se CardTrader lo chiama semplicemente
+    "<Set> Booster Box" (senza "Play"), lo accetta solo se e' l'unico candidato.
+    """
     best = None
     for b in blueprints:
         n = str(b.get("name", "")).lower()
@@ -124,6 +128,17 @@ def find_box_blueprint(blueprints, words):
             continue
         if best is None or len(n) < len(str(best.get("name", ""))):
             best = b
+    if best is None and plain_fallback:
+        plain = []
+        for b in blueprints:
+            n = str(b.get("name", "")).lower()
+            if not ("booster box" in n or "booster display" in n):
+                continue
+            if any(x in n for x in EXCLUDE_WORDS + ("collector", "jumpstart", "set booster", "draft", "commander")):
+                continue
+            plain.append(b)
+        if len(plain) == 1:
+            best = plain[0]
     return best
 
 
@@ -262,7 +277,7 @@ def evaluate_all(today, notes):
             prices_f = expansion_prices(exp_id, foil=True)
             related_bps = None
             for p in products:
-                box_bp = find_box_blueprint(blueprints, p["name_words"])
+                box_bp = find_box_blueprint(blueprints, p["name_words"], p.get("plain_fallback", False))
                 if not box_bp:
                     # ripiego: i prodotti sigillati potrebbero stare in un'altra sezione del set
                     if related_bps is None:
@@ -273,12 +288,14 @@ def evaluate_all(today, notes):
                             except Exception:
                                 pass
                             time.sleep(0.5)
-                    box_bp = find_box_blueprint(related_bps, p["name_words"])
+                    box_bp = find_box_blueprint(related_bps, p["name_words"], p.get("plain_fallback", False))
                 if not box_bp:
                     seen = box_like_names(blueprints + related_bps) or ["nessuno"]
                     notes.append(f"{s['name']}: {p['label']} non trovato su CardTrader. "
                                  f"Prodotti simili: {'; '.join(seen)}")
                     continue
+                if p.get("plain_fallback") and "play" not in str(box_bp.get("name", "")).lower():
+                    notes.append(f"{s['name']}: per {p['label']} uso '{box_bp.get('name')}'.")
                 ref = box_price(box_bp["id"])
                 if not ref:
                     notes.append(f"{s['name']}: nessuna offerta per {p['label']}.")
