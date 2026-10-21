@@ -11,4 +11,5 @@ date,set_code,set_name,product,box_price,ev_net,ratio,prob_profit,median,p10,p90
 2026-10-21,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,330.63,17.5,0.053,0.0,14.79,9.12,30.68,0.552
 2026-10-21,ecl,Lorwyn Eclipsed,Play Booster Box,128.63,68.76,0.535,0.02,66.67,37.85,101.82,0.934
 2026-10-21,ecl,Lorwyn Eclipsed,Collector Booster Box,392.49,33.91,0.086,0.0,30.05,12.19,61.1,0.57
-2026-10-21,tla,Avatar: The Last Airbender,Collector Booster Box,350.64,41.51,0.118,0.0,33.63,20.62,81.59,0.533
+2026-10-21,tla,Avatar: The Last Airbender,Play Booster Box,120.64,75.8,0.628,0.127,65.9,37.34,128.26,0.982
+2026-10-21,tla,Avatar: The Last Airbender,Collector Booster Box,350.64,41.51,0.118,0.0,33.54,20.43,81.04,0.533
