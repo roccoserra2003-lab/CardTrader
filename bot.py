@@ -330,7 +330,7 @@ def run():
         status += [f"  {r['set']} - {r['product']}: x{r['ratio']:.2f} (box {r['box_price']:.0f} EUR, EV {r['ev_net']:.0f} EUR, "
                    f"{r['packs']} bustine, prezzi noti {r['coverage'] * 100:.0f}%"
                    f"{'' if r['packs_source'] == 'mtgjson' else ', bustine NON verificate'})" for r in top]
-        status += [f"Nota: {n}" for n in notes if not n.startswith("AVVISO:")][:8]
+        status += [f"Nota: {n}" for n in notes if not n.startswith("AVVISO:")][:25]
         body += "\n" + section("STATO", status)
 
     if body.strip():
