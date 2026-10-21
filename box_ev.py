@@ -16,12 +16,13 @@ import common as C
 # IMPOSTAZIONI
 # =====================================================================
 PRODUCTS = [
-    # booster_key = nome della configurazione in MTGJSON, packs = bustine per box (da verificare)
-    {"label": "Play Booster Box", "booster_key": "play", "packs": 30, "name_words": ["play booster"]},
-    {"label": "Collector Booster Box", "booster_key": "collector", "packs": 12, "name_words": ["collector booster"]},
+    # booster_key = nome della configurazione in MTGJSON
+    # packs = bustine per box USATE SOLO SE MTGJSON non le indica (cambiano da set a set: es. 30 o 36)
+    {"label": "Play Booster Box", "booster_key": "play", "packs": 36, "name_words": ["play", "booster"]},
+    {"label": "Collector Booster Box", "booster_key": "collector", "packs": 12, "name_words": ["collector", "booster"]},
 ]
 SET_TYPES = {"expansion", "core", "masters", "draft_innovation"}
-MONTHS_BACK = 24              # set usciti negli ultimi 12 mesi
+MONTHS_BACK = 12              # set usciti negli ultimi 12 mesi
 MIN_CARD_VALUE = 0.30         # sotto questo prezzo (EUR) una carta vale 0: nella pratica non si vende
 SELL_FEE_PCT = 5.0            # commissione di vendita stimata (da verificare sul tuo account CardTrader)
 EV_ALERT_RATIO = 1.10         # avvisa se EV netto / prezzo box >= 1,10
@@ -29,6 +30,7 @@ MIN_COVERAGE = 0.90           # quota minima di carte con prezzo noto, altriment
 SIMULATIONS = 5000            # box simulati per ogni prodotto
 # =====================================================================
 
+EXCLUDE_WORDS = ("case", "bundle", "sample", "prerelease", "japan")
 RESULTS_FILE = "data/box_ev.csv"
 RESULT_COLS = ["date", "set_code", "set_name", "product", "box_price", "ev_net", "ratio",
                "prob_profit", "median", "p10", "p90", "coverage"]
@@ -49,13 +51,43 @@ def recent_sets(today):
 
 
 def ct_expansion_index():
-    by_code, by_name = {}, {}
+    by_code, by_name, exps = {}, {}, []
     for e in C.ct_get("/expansions"):
         if e.get("game_id") != C.MAGIC_GAME_ID:
             continue
         by_code[str(e["code"]).lower()] = e["id"]
         by_name[str(e["name"]).lower()] = e["id"]
-    return by_code, by_name
+        exps.append({"id": e["id"], "name": str(e["name"])})
+    return by_code, by_name, exps
+
+
+def related_expansions(set_name, exp_id, exps):
+    """Altre espansioni CardTrader con il nome del set dentro (es. una sezione 'Sealed')."""
+    key = set_name.lower()
+    return [e for e in exps if key in e["name"].lower() and e["id"] != exp_id][:3]
+
+
+def box_like_names(blueprints, limit=10):
+    """Nomi di prodotti sigillati trovati, utili per capire come li chiama CardTrader."""
+    words = ("booster", "box", "display", "bundle", "case")
+    names = [str(b.get("name", "")) for b in blueprints if any(w in str(b.get("name", "")).lower() for w in words)]
+    return names[:limit]
+
+
+def packs_per_box(set_data, words, default):
+    """Numero di bustine per box letto da MTGJSON (cambia da set a set). Ritorna (numero, fonte)."""
+    for sp in set_data.get("sealedProduct") or []:
+        n = str(sp.get("name", "")).lower()
+        if not all(w in n for w in words) or not ("box" in n or "display" in n):
+            continue
+        if any(x in n for x in EXCLUDE_WORDS):
+            continue
+        sealed = (sp.get("contents") or {}).get("sealed") or []
+        count = sum(int(x.get("count", 0)) for x in sealed
+                    if "booster" in str(x.get("name", "")).lower() or "pack" in str(x.get("name", "")).lower())
+        if count > 0:
+            return count, "mtgjson"
+    return default, "predefinito"
 
 
 def load_mtgjson_set(code):
@@ -88,7 +120,7 @@ def find_box_blueprint(blueprints, words):
             continue
         if not ("box" in n or "display" in n):
             continue
-        if any(x in n for x in ("case", "bundle", "sample", "prerelease", "japan")):
+        if any(x in n for x in EXCLUDE_WORDS):
             continue
         if best is None or len(n) < len(str(best.get("name", ""))):
             best = b
@@ -207,14 +239,15 @@ def evaluate_all(today, notes):
     results = []
     rng = np.random.default_rng(int(today.strftime("%Y%m%d")))
     sets = recent_sets(today)
-    by_code, by_name = ct_expansion_index()
+    by_code, by_name, all_exps = ct_expansion_index()
     for s in sets:
         try:
             set_data = load_mtgjson_set(s["code"])
             booster = (set_data or {}).get("booster") or {}
             products = [p for p in PRODUCTS if p["booster_key"] in booster]
             if not products:
-                notes.append(f"{s['name']}: nessun dato bustine in MTGJSON per i prodotti cercati.")
+                keys = ", ".join(sorted(booster.keys())) or "nessuna"
+                notes.append(f"{s['name']}: nessuna bustina Play/Collector in MTGJSON (disponibili: {keys}).")
                 continue
             exp_id = by_code.get(s["code"].lower()) or by_name.get(s["name"].lower())
             if not exp_id:
@@ -227,10 +260,24 @@ def evaluate_all(today, notes):
                        for c in set_data.get("cards", [])}
             prices_nf = expansion_prices(exp_id, foil=False)
             prices_f = expansion_prices(exp_id, foil=True)
+            related_bps = None
             for p in products:
                 box_bp = find_box_blueprint(blueprints, p["name_words"])
                 if not box_bp:
-                    notes.append(f"{s['name']}: {p['label']} non trovato su CardTrader.")
+                    # ripiego: i prodotti sigillati potrebbero stare in un'altra sezione del set
+                    if related_bps is None:
+                        related_bps = []
+                        for rel in related_expansions(s["name"], exp_id, all_exps):
+                            try:
+                                related_bps += C.ct_get("/blueprints/export", {"expansion_id": rel["id"]}, timeout=120)
+                            except Exception:
+                                pass
+                            time.sleep(0.5)
+                    box_bp = find_box_blueprint(related_bps, p["name_words"])
+                if not box_bp:
+                    seen = box_like_names(blueprints + related_bps) or ["nessuno"]
+                    notes.append(f"{s['name']}: {p['label']} non trovato su CardTrader. "
+                                 f"Prodotti simili: {'; '.join(seen)}")
                     continue
                 ref = box_price(box_bp["id"])
                 if not ref:
@@ -240,9 +287,11 @@ def evaluate_all(today, notes):
                 if not model["sheets"] or not model["configs"]:
                     notes.append(f"{s['name']}: struttura bustina non utilizzabile per {p['label']}.")
                     continue
-                metrics = evaluate_product(model, p["packs"], ref["market"], rng)
+                packs, packs_source = packs_per_box(set_data, p["name_words"], p["packs"])
+                metrics = evaluate_product(model, packs, ref["market"], rng)
                 results.append({"code": s["code"], "set": s["name"], "product": p["label"],
-                                "box_price": ref["market"], **metrics})
+                                "box_price": ref["market"], "packs": packs,
+                                "packs_source": packs_source, **metrics})
         except Exception as e:
             notes.append(f"{s['name']}: errore nel calcolo EV ({e}).")
     return results
@@ -264,11 +313,13 @@ def save_results(results, today):
 
 
 def is_alert(r):
-    return r["ratio"] >= EV_ALERT_RATIO and r["coverage"] >= MIN_COVERAGE
+    # senza il numero di bustine confermato da MTGJSON l'EV non e' affidabile: nessun avviso
+    return (r["ratio"] >= EV_ALERT_RATIO and r["coverage"] >= MIN_COVERAGE
+            and r.get("packs_source") == "mtgjson")
 
 
 def format_line(r):
     return (f"- {r['set']} - {r['product']}: box {r['box_price']:.2f} EUR, EV netto {r['ev_net']:.2f} EUR "
-            f"(x{r['ratio']:.2f})\n    probabilita' di andare in pari {r['prob_profit'] * 100:.0f}%, "
+            f"(x{r['ratio']:.2f}, {r['packs']} bustine)\n    probabilita' di andare in pari {r['prob_profit'] * 100:.0f}%, "
             f"mediana {r['median']:.0f} EUR (da {r['p10']:.0f} a {r['p90']:.0f} nel 80% dei casi), "
             f"carte con prezzo noto {r['coverage'] * 100:.0f}%")
