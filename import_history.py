@@ -2,7 +2,7 @@
 Importazione una tantum dello storico prezzi (ultimi 90 giorni) da MTGJSON.
 - Prende le carte che hai in vendita su CardTrader
 - Le collega alle carte di MTGJSON (tramite l'ID Scryfall)
-- Legge dal file AllPrices di MTGJSON i prezzi storici Cardmarket (EUR) di quelle carte
+- Legge dal file AllPrices di MTGJSON i prezzi storici (Cardmarket, altrimenti TCGplayer ecc.)
 - Salva tutto in data/history_mtgjson.csv: il bot lo usa per avere i trend da subito
 
 Lo storico Cardmarket NON ha lo stesso livello di prezzo di CardTrader: il bot lo riscala
@@ -21,7 +21,7 @@ import box_ev
 import common as C
 
 PRICES_URL = "https://mtgjson.com/api/v5/AllPrices.json.gz"
-PROVIDER = "cardmarket"
+PROVIDERS = ["cardmarket", "tcgplayer", "cardkingdom", "cardsphere", "manapool"]   # in ordine di preferenza
 OUT_FILE = "data/history_mtgjson.csv"
 
 
@@ -95,8 +95,8 @@ def open_prices_stream():
     return gzip.GzipFile(fileobj=r.raw)
 
 
-def read_prices(stream, wanted):
-    """Legge il file a pezzi e tiene solo i prezzi Cardmarket delle carte volute."""
+def read_prices(stream, wanted, stats):
+    """Legge il file a pezzi e tiene solo i prezzi (di tutti i fornitori) delle carte volute."""
     import ijson
     try:
         items = ijson.kvitems(stream, "data", use_float=True)
@@ -109,45 +109,71 @@ def read_prices(stream, wanted):
             print(f"  letti {seen} uuid, trovati {len(found)}/{len(wanted)}", flush=True)
         if uuid not in wanted:
             continue
-        retail = (((data or {}).get("paper") or {}).get(PROVIDER) or {}).get("retail") or {}
-        found[uuid] = {k: {d: float(p) for d, p in (retail.get(k) or {}).items()}
-                       for k in ("normal", "foil", "etched")}
+        paper = (data or {}).get("paper") or {}
+        entry = {}
+        for prov in PROVIDERS:
+            retail = (paper.get(prov) or {}).get("retail") or {}
+            entry[prov] = {k: {d: float(p) for d, p in (retail.get(k) or {}).items()}
+                           for k in ("normal", "foil", "etched")}
+        found[uuid] = entry
         if len(found) == len(wanted):
             break                                  # trovate tutte: inutile leggere il resto
+    stats["uuid_letti"] = seen
+    stats["uuid_trovati"] = len(found)
     return found
+
+
+def pick_prices(series, foil, provider_use):
+    """Primo fornitore (in ordine di preferenza) che ha prezzi per quella versione della carta."""
+    finishes = ("foil", "etched") if foil else ("normal",)
+    for prov in PROVIDERS:
+        for fin in finishes:
+            prices = (series.get(prov) or {}).get(fin)
+            if prices:
+                provider_use[prov] = provider_use.get(prov, 0) + 1
+                return prices
+    return {}
 
 
 def run():
     os.makedirs("data", exist_ok=True)
-    notes = []
+    notes, stats = [], {}
     keys = my_card_keys()
     bp_ids = {bp for bp, _ in keys}
+    stats["carte_uniche"] = len(keys)
     print(f"Carte uniche in inventario: {len(keys)}", flush=True)
 
     info = blueprint_info(bp_ids, notes)
+    stats["con_id_scryfall"] = f"{len(info)}/{len(bp_ids)}"
     print(f"Blueprint con ID Scryfall: {len(info)}/{len(bp_ids)}", flush=True)
     sf2uuid = scryfall_to_uuid(info, notes)
+    stats["id_scryfall_collegati"] = len(sf2uuid)
 
     uuid_keys = {}                                  # uuid -> [(blueprint_id, foil), ...]
     for bp, foil in keys:
         if bp in info and info[bp][0] in sf2uuid:
             uuid_keys.setdefault(sf2uuid[info[bp][0]], []).append((bp, foil))
+    stats["uuid_voluti"] = len(uuid_keys)
     print(f"Carte collegate a MTGJSON: {len(uuid_keys)}", flush=True)
+    if not uuid_keys:
+        raise RuntimeError("Nessuna delle tue carte e' stata collegata a MTGJSON. Dati: "
+                           f"{stats}. Note: {' | '.join(notes[:6])}")
 
-    found = read_prices(open_prices_stream(), set(uuid_keys))
+    found = read_prices(open_prices_stream(), set(uuid_keys), stats)
+    print(f"Prezzi letti: {stats}", flush=True)
 
-    rows = []
+    rows, provider_use = [], {}
     for uuid, klist in uuid_keys.items():
         series = found.get(uuid)
         if not series:
             continue
         for bp, foil in klist:
-            prices = series["foil"] or series["etched"] if foil else series["normal"]
-            for d, price in prices.items():
+            for d, price in pick_prices(series, foil, provider_use).items():
                 if price > 0:
                     rows.append({"date": d, "blueprint_id": bp, "foil": foil, "cm_price": round(price, 2)})
     if not rows:
-        raise RuntimeError("Nessun prezzo storico trovato per le tue carte.")
+        raise RuntimeError(f"Nessun prezzo storico trovato per le tue carte. Dati: {stats}. "
+                           f"Note: {' | '.join(notes[:6])}")
 
     df = pd.DataFrame(rows).sort_values(["blueprint_id", "foil", "date"])
     df.to_csv(OUT_FILE, index=False)
@@ -158,7 +184,7 @@ def run():
         "MTG Bot - importazione storico completata",
         f"Carte con storico: {n_cards} su {len(keys)}",
         f"Date distinte: {n_dates} (dal {df['date'].min()} al {df['date'].max()})",
-        "Fonte: Cardmarket via MTGJSON (EUR, riscalato sui prezzi CardTrader).",
+        f"Fonti usate (carte): {provider_use}. Il livello di prezzo viene riscalato su CardTrader.",
     ]
     if n_dates < 20:
         msg.append("Attenzione: poche date distinte, lo storico potrebbe avere cadenza settimanale.")
