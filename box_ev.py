@@ -17,11 +17,11 @@ import common as C
 # =====================================================================
 PRODUCTS = [
     # booster_key = nome della configurazione in MTGJSON, packs = bustine per box (da verificare)
-    {"label": "Play Booster Box", "booster_key": "play", "packs": 36, "name_words": ["play booster"]},
+    {"label": "Play Booster Box", "booster_key": "play", "packs": 30, "name_words": ["play booster"]},
     {"label": "Collector Booster Box", "booster_key": "collector", "packs": 12, "name_words": ["collector booster"]},
 ]
 SET_TYPES = {"expansion", "core", "masters", "draft_innovation"}
-MONTHS_BACK = 12              # set usciti negli ultimi 12 mesi
+MONTHS_BACK = 24              # set usciti negli ultimi 12 mesi
 MIN_CARD_VALUE = 0.30         # sotto questo prezzo (EUR) una carta vale 0: nella pratica non si vende
 SELL_FEE_PCT = 5.0            # commissione di vendita stimata (da verificare sul tuo account CardTrader)
 EV_ALERT_RATIO = 1.10         # avvisa se EV netto / prezzo box >= 1,10
