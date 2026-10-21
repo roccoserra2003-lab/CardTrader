@@ -6,12 +6,12 @@ on:
   workflow_dispatch:       # permette l'avvio manuale dal pulsante "Run workflow"
 
 permissions:
-  contents: write          # serve per salvare lo storico prezzi nel repository
+  contents: write          # serve per salvare lo storico nel repository
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - name: Scarica il codice
         uses: actions/checkout@v4
@@ -32,9 +32,10 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
-      - name: Salva lo storico dei prezzi
+      - name: Salva lo storico
+        if: always()       # salva i dati anche se una parte del bot ha avuto un errore
         run: |
           git config user.name "mtg-bot"
           git config user.email "mtg-bot@users.noreply.github.com"
           git add data
-          git diff --cached --quiet || (git commit -m "Aggiorna storico prezzi" && git push)
+          git diff --cached --quiet || (git commit -m "Aggiorna storico" && git push)
