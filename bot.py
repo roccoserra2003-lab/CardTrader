@@ -47,9 +47,9 @@ PRICES_FILE = "data/prices.csv"
 ALERTS_FILE = "data/alerts_log.csv"
 PRICE_COLS = ["date", "blueprint_id", "foil", "language", "name", "market", "min", "n_listings"]
 
-CT_TOKEN = os.environ["CARDTRADER_TOKEN"]
-TG_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
-TG_CHAT = os.environ["TELEGRAM_CHAT_ID"]
+CT_TOKEN = os.environ["CARDTRADER_TOKEN"].strip()
+TG_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"].strip()
+TG_CHAT = os.environ["TELEGRAM_CHAT_ID"].strip()
 HEADERS = {"Authorization": f"Bearer {CT_TOKEN}"}
 
 
