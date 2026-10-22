@@ -664,85 +664,85 @@ date,blueprint_id,foil,language,name,market,min,n_listings
 2026-10-22,236289,0,en,Malcator's Watcher,0.11,0.11,239
 2026-10-22,236285,0,en,Ichor Synthesizer,0.11,0.11,259
 2026-10-22,236301,0,en,Glistener Seer,0.11,0.11,198
-2026-10-22,236271,0,en,Gitaxian Raptor,0.11,0.11,273
-2026-10-22,236281,0,en,Gitaxian Anatomist,0.11,0.11,265
-2026-10-22,236111,0,en,Font of Progress,0.11,0.11,268
-2026-10-22,236284,0,en,Eye of Malcator,0.11,0.11,274
-2026-10-22,234857,0,en,Experimental Augury,0.11,0.11,111
-2026-10-22,236279,0,en,Escaped Experiment,0.11,0.11,275
-2026-10-22,236121,0,en,Distorted Curiosity,0.11,0.11,232
-2026-10-22,236293,0,en,Chrome Prowler,0.11,0.11,275
-2026-10-22,236047,0,en,Bring the Ending,0.11,0.11,165
-2026-10-22,236050,0,en,Atmosphere Surgeon,0.11,0.11,260
-2026-10-22,236266,0,en,Zealot's Conviction,0.11,0.11,238
-2026-10-22,235197,0,en,Veil of Assimilation,0.11,0.11,264
-2026-10-22,234828,0,en,Vanish into Eternity,0.11,0.11,246
-2026-10-22,235074,0,en,Swooping Lookout,0.11,0.11,187
+2026-10-22,236271,0,en,Gitaxian Raptor,0.11,0.11,274
+2026-10-22,236281,0,en,Gitaxian Anatomist,0.11,0.11,263
+2026-10-22,236111,0,en,Font of Progress,0.11,0.11,266
+2026-10-22,236284,0,en,Eye of Malcator,0.11,0.11,272
+2026-10-22,234857,0,en,Experimental Augury,0.11,0.11,110
+2026-10-22,236279,0,en,Escaped Experiment,0.11,0.11,273
+2026-10-22,236121,0,en,Distorted Curiosity,0.11,0.11,230
+2026-10-22,236293,0,en,Chrome Prowler,0.11,0.11,273
+2026-10-22,236047,0,en,Bring the Ending,0.11,0.11,164
+2026-10-22,236050,0,en,Atmosphere Surgeon,0.11,0.11,259
+2026-10-22,236266,0,en,Zealot's Conviction,0.11,0.11,236
+2026-10-22,235197,0,en,Veil of Assimilation,0.11,0.11,262
+2026-10-22,234828,0,en,Vanish into Eternity,0.11,0.11,244
+2026-10-22,235074,0,en,Swooping Lookout,0.11,0.11,186
 2026-10-22,234170,0,en,Skrelv's Hive,1.1,0.85,97
-2026-10-22,235076,0,en,Sinew Dancer,0.11,0.11,263
-2026-10-22,234844,0,en,Resistance Reunited,0.11,0.11,258
-2026-10-22,236029,0,en,Porcelain Zealot,0.11,0.11,248
-2026-10-22,236270,0,en,Plated Onslaught,0.11,0.11,264
-2026-10-22,234782,0,en,Ossification,0.16,0.11,140
-2026-10-22,236288,0,en,Orthodoxy Enforcer,0.11,0.11,271
-2026-10-22,234167,0,en,Norn's Wellspring,0.11,0.11,197
-2026-10-22,236272,0,en,Mandible Justiciar,0.11,0.11,246
-2026-10-22,235071,0,en,Jawbone Duelist,0.11,0.11,194
-2026-10-22,235208,0,en,Infested Fleshcutter,0.11,0.11,230
-2026-10-22,236306,0,en,Indoctrination Attendant,0.11,0.11,215
-2026-10-22,235072,0,en,Incisor Glider,0.11,0.11,275
-2026-10-22,236119,0,en,Hexgold Hoverwings,0.11,0.11,242
+2026-10-22,235076,0,en,Sinew Dancer,0.11,0.11,261
+2026-10-22,234844,0,en,Resistance Reunited,0.11,0.11,256
+2026-10-22,236029,0,en,Porcelain Zealot,0.11,0.11,246
+2026-10-22,236270,0,en,Plated Onslaught,0.11,0.11,262
+2026-10-22,234782,0,en,Ossification,0.16,0.11,139
+2026-10-22,236288,0,en,Orthodoxy Enforcer,0.11,0.11,269
+2026-10-22,234167,0,en,Norn's Wellspring,0.11,0.11,198
+2026-10-22,236272,0,en,Mandible Justiciar,0.11,0.11,244
+2026-10-22,235071,0,en,Jawbone Duelist,0.11,0.11,193
+2026-10-22,235208,0,en,Infested Fleshcutter,0.11,0.11,228
+2026-10-22,236306,0,en,Indoctrination Attendant,0.11,0.11,213
+2026-10-22,235072,0,en,Incisor Glider,0.11,0.11,273
+2026-10-22,236119,0,en,Hexgold Hoverwings,0.11,0.11,240
 2026-10-22,236313,1,en,Goldwarden's Helm,0.11,0.11,156
-2026-10-22,236256,0,en,Flensing Raptor,0.11,0.11,219
+2026-10-22,236256,0,en,Flensing Raptor,0.11,0.11,217
 2026-10-22,236039,0,en,Duelist of Deep Faith,0.11,0.11,256
-2026-10-22,236117,0,en,Crawling Chorus,0.11,0.11,182
-2026-10-22,235364,0,en,Compleat Devotion,0.11,0.11,252
-2026-10-22,236269,0,en,Charge of the Mites,0.11,0.11,242
-2026-10-22,235570,0,en,Bladed Ambassador,0.11,0.11,260
-2026-10-22,236286,0,en,Basilica Shepherd,0.11,0.11,219
-2026-10-22,235068,0,en,Apostle of Invasion,0.11,0.11,258
+2026-10-22,236117,0,en,Crawling Chorus,0.11,0.11,181
+2026-10-22,235364,0,en,Compleat Devotion,0.11,0.11,251
+2026-10-22,236269,0,en,Charge of the Mites,0.11,0.11,241
+2026-10-22,235570,0,en,Bladed Ambassador,0.11,0.11,258
+2026-10-22,236286,0,en,Basilica Shepherd,0.11,0.11,218
+2026-10-22,235068,0,en,Apostle of Invasion,0.11,0.11,256
 2026-10-22,234780,0,en,Annex Sentry,0.11,0.11,211
-2026-10-22,236038,0,en,Against All Odds,0.11,0.11,249
-2026-10-22,235208,1,en,Infested Fleshcutter,0.16,0.14,131
+2026-10-22,236038,0,en,Against All Odds,0.11,0.11,248
+2026-10-22,235208,1,en,Infested Fleshcutter,0.16,0.15,130
 2026-10-22,236293,1,en,Chrome Prowler,0.11,0.11,149
 2026-10-22,236279,1,en,Escaped Experiment,0.12,0.11,142
 2026-10-22,234798,1,en,Minor Misstep,0.29,0.29,91
-2026-10-22,235572,1,en,Ambulatory Edifice,0.11,0.11,155
+2026-10-22,235572,1,en,Ambulatory Edifice,0.11,0.11,154
 2026-10-22,236311,1,en,Cruel Grimnarch,0.12,0.12,133
-2026-10-22,234839,1,en,Sheoldred's Edict,2.21,2.17,35
+2026-10-22,234839,1,en,Sheoldred's Edict,2.3,2.21,34
 2026-10-22,235573,1,en,Furnace Punisher,0.12,0.11,133
 2026-10-22,236294,1,en,Furnace Strider,0.12,0.12,142
 2026-10-22,236292,1,en,Shrapnel Slinger,0.11,0.11,156
-2026-10-22,236041,1,en,Armored Scrapgorger,0.36,0.26,53
+2026-10-22,236041,1,en,Armored Scrapgorger,0.3,0.26,53
 2026-10-22,236316,1,en,Copper Longlegs,0.12,0.12,135
 2026-10-22,236114,1,en,Sylvok Battle-Chair,0.11,0.11,147
 2026-10-22,236120,1,en,Cinderslash Ravager,0.11,0.11,141
 2026-10-22,234169,1,en,"Ria Ivor, Bane of Bladehold",0.19,0.18,114
 2026-10-22,236274,1,en,Myr Custodian,0.11,0.11,139
 2026-10-22,236032,1,en,The Dross Pits,0.14,0.11,134
-2026-10-22,236028,1,en,The Fair Basilica,0.17,0.16,131
-2026-10-22,236324,0,en,Bladed Ambassador,0.11,0.11,313
+2026-10-22,236028,1,en,The Fair Basilica,0.17,0.16,130
+2026-10-22,236324,0,en,Bladed Ambassador,0.11,0.11,312
 2026-10-22,235085,0,en,Sinew Dancer,0.11,0.11,363
 2026-10-22,235756,0,en,Quicksilver Fisher,0.11,0.11,367
 2026-10-22,236058,0,en,Thrummingbird,0.11,0.11,190
-2026-10-22,235752,0,en,Blightbelly Rat,0.11,0.11,267
-2026-10-22,235752,1,en,Blightbelly Rat,0.14,0.14,169
-2026-10-22,235225,0,en,Bonepicker Skirge,0.11,0.11,383
-2026-10-22,236322,0,en,Furnace Punisher,0.11,0.11,279
-2026-10-22,235379,0,en,Sawblade Scamp,0.11,0.11,359
-2026-10-22,235384,0,en,Urabrask's Anointer,0.11,0.11,296
+2026-10-22,235752,0,en,Blightbelly Rat,0.11,0.11,266
+2026-10-22,235752,1,en,Blightbelly Rat,0.14,0.14,168
+2026-10-22,235225,0,en,Bonepicker Skirge,0.11,0.11,382
+2026-10-22,236322,0,en,Furnace Punisher,0.11,0.11,278
+2026-10-22,235379,0,en,Sawblade Scamp,0.11,0.11,358
+2026-10-22,235384,0,en,Urabrask's Anointer,0.11,0.11,295
 2026-10-22,235569,0,en,Cankerbloom,0.11,0.11,97
-2026-10-22,236331,1,en,Rustvine Cultivator,0.11,0.11,236
-2026-10-22,236331,0,en,Rustvine Cultivator,0.11,0.11,357
+2026-10-22,236331,1,en,Rustvine Cultivator,0.11,0.11,235
+2026-10-22,236331,0,en,Rustvine Cultivator,0.11,0.11,356
 2026-10-22,234790,1,en,Myr Convert,0.19,0.19,129
-2026-10-22,236062,0,en,Phyrexian Vindicator,5.23,5.1,27
+2026-10-22,236062,0,en,Phyrexian Vindicator,5.23,5.1,28
 2026-10-22,333731,0,en,"Thrasios, Triton Hero",18.27,17.27,18
 2026-10-22,291616,1,it,"Ezio, Brash Novice",0.29,0.23,13
 2026-10-22,291692,0,it,Mortify,0.11,0.11,22
 2026-10-22,291541,0,it,"Senu, Keen-Eyed Protector",1.4,1.4,12
 2026-10-22,334935,0,en,Aerith Rescue Mission,0.11,0.11,450
-2026-10-22,335205,0,en,Summon: Choco/Mog,0.11,0.11,328
-2026-10-22,332912,0,en,Zack Fair,0.11,0.11,296
+2026-10-22,335205,0,en,Summon: Choco/Mog,0.11,0.11,326
+2026-10-22,332912,0,en,Zack Fair,0.11,0.11,295
 2026-10-22,334824,0,en,Light of Judgment,0.11,0.11,464
 2026-10-22,333166,0,en,Freya Crescent,0.11,0.11,312
 2026-10-22,334970,1,en,Bard's Bow,0.11,0.11,229
