@@ -38,7 +38,7 @@ BASIC_LANDS = {"plains", "island", "swamp", "mountain", "forest", "wastes"}
 EXCLUDE_WORDS = ("case", "bundle", "sample", "prerelease", "japan")
 RESULTS_FILE = "data/box_ev.csv"
 RESULT_COLS = ["date", "set_code", "set_name", "product", "box_price", "ev_net", "ratio",
-               "prob_profit", "median", "p10", "p90", "coverage"]
+               "prob_profit", "median", "p10", "p90", "coverage", "ratio_cons"]
 
 
 # ------------------------------------------------------------ Dati di base
@@ -130,7 +130,7 @@ def expansion_prices(expansion_id, foil):
         for bp, listings in data.items():
             ref = C.reference_price(listings)
             if ref:
-                prices[int(bp)] = ref["market"]
+                prices[int(bp)] = ref          # {"market": mediana delle 3 piu' economiche, "min": ..., "n": ...}
     return prices
 
 
@@ -176,7 +176,7 @@ def box_price(blueprint_id):
 
 
 # ----------------------------------------------------------- Modello e EV
-def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None):
+def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None, field="market"):
     """Trasforma la configurazione MTGJSON + i prezzi in un modello calcolabile."""
     uuid2name = uuid2name or {}
     keep = 1 - SELL_FEE_PCT / 100
@@ -184,12 +184,12 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
     for name, sh in (booster_cfg.get("sheets") or {}).items():
         cards = sh.get("cards") or {}
         is_foil = bool(sh.get("foil"))
-        weights, values, covered = [], [], []
+        weights, values, covered, gross, counts = [], [], [], [], []
         why = {"ok": 0.0, "altro set": 0.0, "senza blueprint": 0.0, "senza offerte": 0.0}
         missing = []
         for uuid, w in cards.items():
             sf = uuid2sf.get(uuid)
-            price, cat = None, "ok"
+            price, cat, n_list = None, "ok", 0
             if sf is None:
                 cat = "altro set"
             else:
@@ -197,9 +197,11 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
                 if bp is None:
                     cat = "senza blueprint"
                 else:
-                    price = prices_f.get(bp, prices_nf.get(bp)) if is_foil else prices_nf.get(bp)
-                    if price is None:
+                    ref = (prices_f.get(bp) or prices_nf.get(bp)) if is_foil else prices_nf.get(bp)
+                    if ref is None:
                         cat = "senza offerte"
+                    else:
+                        price, n_list = ref[field], ref["n"]
             if price is None and cat in ("senza blueprint", "senza offerte") and _is_basic_land(uuid2name.get(uuid, "")):
                 cat, price = "ok", 0.0          # le terre base valgono ~0: non contano come "mancanti"
             why[cat] += float(w)
@@ -207,6 +209,8 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
                 missing.append((float(w), f"{uuid2name.get(uuid, 'carta di un altro set')} [{cat}]"))
             covered.append(price is not None)
             p = price or 0.0
+            gross.append(p)
+            counts.append(n_list)
             values.append(0.0 if p < MIN_CARD_VALUE else p * keep)
             weights.append(float(w))
         if not weights or sum(weights) <= 0:
@@ -216,6 +220,10 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
         missing.sort(reverse=True)
         sheets[name] = {
             "values": v_arr,
+            "weights": w_arr,
+            "uuids": list(cards.keys()),
+            "gross": gross,
+            "n_list": counts,
             "cdf": np.cumsum(w_arr),
             "mean": float((w_arr * v_arr).sum() / total_w),
             "cov": float((w_arr * np.array(covered)).sum() / total_w),
@@ -277,6 +285,30 @@ def pack_ev_and_coverage(model):
                 cov_num += p * count * sh["cov"]
                 cov_den += p * count
     return ev, (cov_num / cov_den if cov_den else 0.0)
+
+
+def top_contributors(model, packs, uuid2name, n=5):
+    """Le carte che pesano di piu' sull'EV del box: [(nome, prezzo, n. offerte, quota EV)], quota delle prime n."""
+    configs, sheets = model["configs"], model["sheets"]
+    total_w = sum(c["weight"] for c in configs) or 1.0
+    draws = {}
+    for c in configs:
+        for sname, count in c["contents"].items():
+            if sname in sheets and not sheets[sname]["fixed"]:
+                draws[sname] = draws.get(sname, 0.0) + c["weight"] / total_w * count
+    contrib = {}
+    for sname, d in draws.items():
+        sh = sheets[sname]
+        tw = float(sh["weights"].sum())
+        for i, uuid in enumerate(sh["uuids"]):
+            e = contrib.setdefault(uuid, {"ev": 0.0, "price": sh["gross"][i], "n": sh["n_list"][i]})
+            e["ev"] += packs * d * float(sh["weights"][i]) / tw * float(sh["values"][i])
+    total = sum(v["ev"] for v in contrib.values())
+    if total <= 0:
+        return [], 0.0
+    ranked = sorted(contrib.items(), key=lambda kv: -kv[1]["ev"])[:n]
+    top = [(uuid2name.get(u, "carta di un altro set"), v["price"], v["n"], v["ev"] / total) for u, v in ranked]
+    return top, sum(t[3] for t in top)
 
 
 def simulate_boxes(model, packs, n_sims, rng):
@@ -414,6 +446,9 @@ def evaluate_all(today, notes):
                     continue
                 packs, packs_source = packs_per_box(set_data, p["name_words"], p["packs"])
                 metrics = evaluate_product(model, packs, ref["market"], rng)
+                cons = build_model(booster[p["booster_key"]], uuid2sf, sf2bp, prices_nf, prices_f, uuid2name, field="min")
+                metrics["ratio_cons"] = pack_ev_and_coverage(cons)[0] * packs / ref["market"] if ref["market"] > 0 else 0.0
+                metrics["top"], metrics["top_share"] = top_contributors(model, packs, uuid2name)
                 if metrics["coverage"] < MIN_COVERAGE:
                     summary, details = coverage_report(model)
                     notes.append(f"{s['name']} - {p['label']}: prezzi noti {metrics['coverage'] * 100:.0f}%, "
@@ -435,7 +470,7 @@ def save_results(results, today):
              "box_price": round(r["box_price"], 2), "ev_net": round(r["ev_net"], 2),
              "ratio": round(r["ratio"], 3), "prob_profit": round(r["prob_profit"], 3),
              "median": round(r["median"], 2), "p10": round(r["p10"], 2), "p90": round(r["p90"], 2),
-             "coverage": round(r["coverage"], 3)} for r in results]
+             "coverage": round(r["coverage"], 3), "ratio_cons": round(r.get("ratio_cons", 0), 3)} for r in results]
     new = pd.DataFrame(rows, columns=RESULT_COLS)
     frames = [f for f in (old, new) if not f.empty]
     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=RESULT_COLS)
@@ -449,7 +484,15 @@ def is_alert(r):
 
 
 def format_line(r):
-    return (f"- {r['set']} - {r['product']}: box {r['box_price']:.2f} EUR, EV netto {r['ev_net']:.2f} EUR "
-            f"(x{r['ratio']:.2f}, {r['packs']} bustine)\n    probabilita' di andare in pari {r['prob_profit'] * 100:.0f}%, "
+    text = (f"- {r['set']} - {r['product']}: box {r['box_price']:.2f} EUR, EV netto {r['ev_net']:.2f} EUR "
+            f"(x{r['ratio']:.2f}, {r['packs']} bustine)\n"
+            f"    probabilita' di andare in pari {r['prob_profit'] * 100:.0f}%, "
             f"mediana {r['median']:.0f} EUR (da {r['p10']:.0f} a {r['p90']:.0f} nel 80% dei casi), "
-            f"carte con prezzo noto {r['coverage'] * 100:.0f}%")
+            f"carte con prezzo noto {r['coverage'] * 100:.0f}%\n"
+            f"    EV prudente (offerta piu' bassa per ogni carta): x{r.get('ratio_cons', 0):.2f}")
+    if r.get("top"):
+        cards = "; ".join(f"{name} ({price:.0f} EUR, {n} offerte, {share * 100:.0f}% dell'EV)"
+                          for name, price, n, share in r["top"])
+        text += (f"\n    Carte che pesano di piu': {cards}"
+                 f"\n    Le prime {len(r['top'])} valgono il {r['top_share'] * 100:.0f}% dell'EV")
+    return text
