@@ -27,6 +27,10 @@ MIN_CARD_VALUE = 0.30         # sotto questo prezzo (EUR) una carta vale 0: nell
 SELL_FEE_PCT = 5.0            # commissione di vendita stimata (da verificare sul tuo account CardTrader)
 EV_ALERT_RATIO = 1.10         # avvisa se EV netto / prezzo box >= 1,10
 MIN_COVERAGE = 0.90           # quota minima di carte con prezzo noto, altrimenti non avvisa
+USE_LOWEST_PRICE = True       # True: carte e box valutati all'offerta piu' bassa (False: mediana delle 3 piu' basse)
+OUTLIER_RATIO = 0.75          # se l'offerta piu' bassa e' oltre il 25% sotto la seconda, la considero un errore
+THIN_OFFERS = 3               # sotto 3 offerte il prezzo di una carta e' poco affidabile
+THIN_MARKET_FACTORS = {1: 0.5, 2: 0.75}   # sconto di liquidita' per carte con 1 o 2 offerte (metti 1.0 per toglierlo)
 SIMULATIONS = 5000            # box simulati per ogni prodotto
 # =====================================================================
 
@@ -38,7 +42,7 @@ BASIC_LANDS = {"plains", "island", "swamp", "mountain", "forest", "wastes"}
 EXCLUDE_WORDS = ("case", "bundle", "sample", "prerelease", "japan")
 RESULTS_FILE = "data/box_ev.csv"
 RESULT_COLS = ["date", "set_code", "set_name", "product", "box_price", "ev_net", "ratio",
-               "prob_profit", "median", "p10", "p90", "coverage", "ratio_cons"]
+               "prob_profit", "median", "p10", "p90", "coverage", "ratio_median"]
 
 
 # ------------------------------------------------------------ Dati di base
@@ -120,6 +124,30 @@ def load_mtgjson_set(code):
     return data.get("data") if data else None
 
 
+def make_ref(listings, check_condition=True):
+    """Prezzi di riferimento di una carta: mediana delle 3 piu' basse, minimo protetto da errori, n. offerte."""
+    base = C.reference_price(listings, check_condition=check_condition)
+    if not base:
+        return None
+    prices = []
+    for lst in listings or []:
+        if lst.get("on_vacation") or lst.get("graded") or (lst.get("bundle_size") or 1) != 1:
+            continue
+        if check_condition and (lst.get("properties_hash") or {}).get("condition") not in ("Near Mint", "Mint"):
+            continue
+        try:
+            prices.append(lst["price"]["cents"] / 100)
+        except (KeyError, TypeError):
+            continue
+    prices.sort()
+    low = prices[0]
+    if len(prices) >= 2 and prices[0] < OUTLIER_RATIO * prices[1]:
+        low = prices[1]                       # offerta piu' bassa sospetta: uso la seconda
+    base["low"] = low
+    base["second"] = prices[1] if len(prices) > 1 else None
+    return base
+
+
 def expansion_prices(expansion_id, foil):
     """Prezzo di riferimento di ogni carta del set (inglese, Near Mint), una sola chiamata."""
     data = C.ct_get("/marketplace/products", {
@@ -128,9 +156,9 @@ def expansion_prices(expansion_id, foil):
     prices = {}
     if isinstance(data, dict):
         for bp, listings in data.items():
-            ref = C.reference_price(listings)
+            ref = make_ref(listings)
             if ref:
-                prices[int(bp)] = ref          # {"market": mediana delle 3 piu' economiche, "min": ..., "n": ...}
+                prices[int(bp)] = ref          # {"market", "min", "low", "n"}
     return prices
 
 
@@ -169,14 +197,14 @@ def box_price(blueprint_id):
         data = C.ct_get("/marketplace/products", params)
         time.sleep(1.1)
         listings = data.get(str(blueprint_id), []) if isinstance(data, dict) else []
-        ref = C.reference_price(listings, check_condition=False)
+        ref = make_ref(listings, check_condition=False)
         if ref:
             return ref
     return None
 
 
 # ----------------------------------------------------------- Modello e EV
-def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None, field="market"):
+def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None, robust=True):
     """Trasforma la configurazione MTGJSON + i prezzi in un modello calcolabile."""
     uuid2name = uuid2name or {}
     keep = 1 - SELL_FEE_PCT / 100
@@ -201,7 +229,8 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
                     if ref is None:
                         cat = "senza offerte"
                     else:
-                        price, n_list = ref[field], ref["n"]
+                        n_list = ref["n"]
+                        price = ref["low"] if robust else ref["market"]
             if price is None and cat in ("senza blueprint", "senza offerte") and _is_basic_land(uuid2name.get(uuid, "")):
                 cat, price = "ok", 0.0          # le terre base valgono ~0: non contano come "mancanti"
             why[cat] += float(w)
@@ -211,6 +240,8 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
             p = price or 0.0
             gross.append(p)
             counts.append(n_list)
+            if robust and n_list:
+                p *= THIN_MARKET_FACTORS.get(n_list, 1.0)      # sconto di liquidita' (1 o 2 offerte)
             values.append(0.0 if p < MIN_CARD_VALUE else p * keep)
             weights.append(float(w))
         if not weights or sum(weights) <= 0:
@@ -305,10 +336,11 @@ def top_contributors(model, packs, uuid2name, n=5):
             e["ev"] += packs * d * float(sh["weights"][i]) / tw * float(sh["values"][i])
     total = sum(v["ev"] for v in contrib.values())
     if total <= 0:
-        return [], 0.0
+        return [], 0.0, 0.0
     ranked = sorted(contrib.items(), key=lambda kv: -kv[1]["ev"])[:n]
     top = [(uuid2name.get(u, "carta di un altro set"), v["price"], v["n"], v["ev"] / total) for u, v in ranked]
-    return top, sum(t[3] for t in top)
+    thin = sum(v["ev"] for v in contrib.values() if 0 < v["n"] < THIN_OFFERS) / total
+    return top, sum(t[3] for t in top), thin
 
 
 def simulate_boxes(model, packs, n_sims, rng):
@@ -440,22 +472,26 @@ def evaluate_all(today, notes):
                 if not ref:
                     notes.append(f"{s['name']}: nessuna offerta per {p['label']}.")
                     continue
-                model = build_model(booster[p["booster_key"]], uuid2sf, sf2bp, prices_nf, prices_f, uuid2name)
+                model = build_model(booster[p["booster_key"]], uuid2sf, sf2bp, prices_nf, prices_f, uuid2name,
+                                    robust=USE_LOWEST_PRICE)
                 if not model["sheets"] or not model["configs"]:
                     notes.append(f"{s['name']}: struttura bustina non utilizzabile per {p['label']}.")
                     continue
                 packs, packs_source = packs_per_box(set_data, p["name_words"], p["packs"])
-                metrics = evaluate_product(model, packs, ref["market"], rng)
-                cons = build_model(booster[p["booster_key"]], uuid2sf, sf2bp, prices_nf, prices_f, uuid2name, field="min")
-                metrics["ratio_cons"] = pack_ev_and_coverage(cons)[0] * packs / ref["market"] if ref["market"] > 0 else 0.0
-                metrics["top"], metrics["top_share"] = top_contributors(model, packs, uuid2name)
+                price_used = ref["min"] if USE_LOWEST_PRICE else ref["market"]   # box: offerta piu' bassa reale, senza protezione
+                metrics = evaluate_product(model, packs, price_used, rng)
+                old_model = build_model(booster[p["booster_key"]], uuid2sf, sf2bp, prices_nf, prices_f, uuid2name,
+                                        robust=False)
+                metrics["ratio_median"] = (pack_ev_and_coverage(old_model)[0] * packs / ref["market"]
+                                           if ref["market"] > 0 else 0.0)
+                metrics["top"], metrics["top_share"], metrics["thin_share"] = top_contributors(model, packs, uuid2name)
                 if metrics["coverage"] < MIN_COVERAGE:
                     summary, details = coverage_report(model)
                     notes.append(f"{s['name']} - {p['label']}: prezzi noti {metrics['coverage'] * 100:.0f}%, "
                                  f"mancano: {summary}. " + " | ".join(details)
                                  + f" [espansioni CardTrader usate: {used}]")
                 results.append({"code": s["code"], "set": s["name"], "product": p["label"],
-                                "box_price": ref["market"], "packs": packs,
+                                "box_price": price_used, "box_second": ref.get("second"), "packs": packs,
                                 "packs_source": packs_source, **metrics})
         except Exception as e:
             notes.append(f"{s['name']}: errore nel calcolo EV ({e}).")
@@ -470,7 +506,7 @@ def save_results(results, today):
              "box_price": round(r["box_price"], 2), "ev_net": round(r["ev_net"], 2),
              "ratio": round(r["ratio"], 3), "prob_profit": round(r["prob_profit"], 3),
              "median": round(r["median"], 2), "p10": round(r["p10"], 2), "p90": round(r["p90"], 2),
-             "coverage": round(r["coverage"], 3), "ratio_cons": round(r.get("ratio_cons", 0), 3)} for r in results]
+             "coverage": round(r["coverage"], 3), "ratio_median": round(r.get("ratio_median", 0), 3)} for r in results]
     new = pd.DataFrame(rows, columns=RESULT_COLS)
     frames = [f for f in (old, new) if not f.empty]
     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=RESULT_COLS)
@@ -489,10 +525,16 @@ def format_line(r):
             f"    probabilita' di andare in pari {r['prob_profit'] * 100:.0f}%, "
             f"mediana {r['median']:.0f} EUR (da {r['p10']:.0f} a {r['p90']:.0f} nel 80% dei casi), "
             f"carte con prezzo noto {r['coverage'] * 100:.0f}%\n"
-            f"    EV prudente (offerta piu' bassa per ogni carta): x{r.get('ratio_cons', 0):.2f}")
+            f"    Metodo precedente (mediana delle 3 offerte piu' basse): x{r.get('ratio_median', 0):.2f}")
+    second = r.get("box_second")
+    if second and r["box_price"] < OUTLIER_RATIO * second:
+        text += (f"\n    ATTENZIONE: l'offerta piu' bassa del box ({r['box_price']:.0f} EUR) e' "
+                 f"{(1 - r['box_price'] / second) * 100:.0f}% sotto la seconda ({second:.0f} EUR): "
+                 f"possibile occasione, ma controlla venditore, lingua, condizioni e che sia ancora disponibile")
     if r.get("top"):
         cards = "; ".join(f"{name} ({price:.0f} EUR, {n} offerte, {share * 100:.0f}% dell'EV)"
                           for name, price, n, share in r["top"])
         text += (f"\n    Carte che pesano di piu': {cards}"
-                 f"\n    Le prime {len(r['top'])} valgono il {r['top_share'] * 100:.0f}% dell'EV")
+                 f"\n    Le prime {len(r['top'])} valgono il {r['top_share'] * 100:.0f}% dell'EV; "
+                 f"{r.get('thin_share', 0) * 100:.0f}% dell'EV viene da carte con meno di {THIN_OFFERS} offerte")
     return text
