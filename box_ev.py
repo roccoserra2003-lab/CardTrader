@@ -30,6 +30,11 @@ MIN_COVERAGE = 0.90           # quota minima di carte con prezzo noto, altriment
 SIMULATIONS = 5000            # box simulati per ogni prodotto
 # =====================================================================
 
+SKIP_COMPANION_TYPES = {"token", "memorabilia", "minigame", "vanguard", "alchemy", "promo",
+                        "funny", "treasure_chest", "arsenal", "planechase", "archenemy"}
+COMPANION_DAYS = 3            # set usciti entro 3 giorni dal set principale (Commander, bonus, ecc.)
+MAX_RELATED = 6               # massimo di espansioni CardTrader correlate per nome
+BASIC_LANDS = {"plains", "island", "swamp", "mountain", "forest", "wastes"}
 EXCLUDE_WORDS = ("case", "bundle", "sample", "prerelease", "japan")
 RESULTS_FILE = "data/box_ev.csv"
 RESULT_COLS = ["date", "set_code", "set_name", "product", "box_price", "ev_net", "ratio",
@@ -64,7 +69,24 @@ def ct_expansion_index():
 def related_expansions(set_name, exp_id, exps):
     """Altre espansioni CardTrader con il nome del set dentro (es. una sezione 'Sealed')."""
     key = set_name.lower()
-    return [e for e in exps if key in e["name"].lower() and e["id"] != exp_id][:3]
+    return [e for e in exps if key in e["name"].lower() and e["id"] != exp_id][:MAX_RELATED]
+
+
+def companion_sets(main):
+    """Set usciti nello stesso periodo (Commander, bonus, archivi) da cui possono arrivare carte nelle bustine."""
+    out = []
+    for s in C.scryfall_sets():
+        if s.get("digital") or not s.get("released_at") or s["code"] == main["code"]:
+            continue
+        if s.get("set_type") in SKIP_COMPANION_TYPES:
+            continue
+        if abs((date.fromisoformat(s["released_at"]) - main["released"]).days) <= COMPANION_DAYS:
+            out.append(s)
+    return out[:6]
+
+
+def _is_basic_land(name):
+    return str(name).lower().replace("snow-covered ", "").strip() in BASIC_LANDS
 
 
 def box_like_names(blueprints, limit=10):
@@ -178,6 +200,8 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
                     price = prices_f.get(bp, prices_nf.get(bp)) if is_foil else prices_nf.get(bp)
                     if price is None:
                         cat = "senza offerte"
+            if price is None and cat in ("senza blueprint", "senza offerte") and _is_basic_land(uuid2name.get(uuid, "")):
+                cat, price = "ok", 0.0          # le terre base valgono ~0: non contano come "mancanti"
             why[cat] += float(w)
             if cat != "ok":
                 missing.append((float(w), f"{uuid2name.get(uuid, 'carta di un altro set')} [{cat}]"))
@@ -294,12 +318,35 @@ def evaluate_product(model, packs, price, rng):
 
 
 # --------------------------------------------------------------- Principale
+def _blueprints(exp_id, cache, notes, label):
+    if exp_id not in cache:
+        try:
+            cache[exp_id] = C.ct_get("/blueprints/export", {"expansion_id": exp_id}, timeout=120)
+        except Exception as e:
+            notes.append(f"{label}: blueprint non letti ({e})")
+            cache[exp_id] = []
+        time.sleep(0.5)
+    return cache[exp_id]
+
+
+def _prices(exp_id, foil, cache, notes, label):
+    key = (exp_id, foil)
+    if key not in cache:
+        try:
+            cache[key] = expansion_prices(exp_id, foil)
+        except Exception as e:
+            notes.append(f"{label}: prezzi non letti ({e})")
+            cache[key] = {}
+    return cache[key]
+
+
 def evaluate_all(today, notes):
     results = []
     rng = np.random.default_rng(int(today.strftime("%Y%m%d")))
-    sets = recent_sets(today)
     by_code, by_name, all_exps = ct_expansion_index()
-    for s in sets:
+    exp_names = {e["id"]: e["name"] for e in all_exps}
+    bp_cache, price_cache, set_cache = {}, {}, {}
+    for s in recent_sets(today):
         try:
             set_data = load_mtgjson_set(s["code"])
             booster = (set_data or {}).get("booster") or {}
@@ -312,30 +359,46 @@ def evaluate_all(today, notes):
             if not exp_id:
                 notes.append(f"{s['name']}: set non trovato su CardTrader.")
                 continue
-            blueprints = C.ct_get("/blueprints/export", {"expansion_id": exp_id}, timeout=120)
-            time.sleep(0.5)
+
+            # carte (uuid -> ID Scryfall) del set e dei set usciti lo stesso periodo
+            uuid2sf, uuid2name = {}, {}
+
+            def add_cards(data):
+                for c in (data or {}).get("cards", []):
+                    uuid2sf[c["uuid"]] = (c.get("identifiers") or {}).get("scryfallId")
+                    uuid2name[c["uuid"]] = c.get("name", "?")
+
+            add_cards(set_data)
+            exp_ids = [exp_id]
+            for cs in companion_sets(s):
+                if cs["code"] not in set_cache:
+                    try:
+                        set_cache[cs["code"]] = load_mtgjson_set(cs["code"])
+                    except Exception as e:
+                        set_cache[cs["code"]] = None
+                        notes.append(f"{s['name']}: set collegato {cs['code']} non letto ({e})")
+                add_cards(set_cache[cs["code"]])
+                cid = by_code.get(cs["code"].lower()) or by_name.get(cs["name"].lower())
+                if cid and cid not in exp_ids:
+                    exp_ids.append(cid)
+            for e in related_expansions(s["name"], exp_id, all_exps):
+                if e["id"] not in exp_ids:
+                    exp_ids.append(e["id"])
+
+            # blueprint e prezzi di tutte le espansioni CardTrader coinvolte
+            blueprints, prices_nf, prices_f = [], {}, {}
+            for eid in exp_ids:
+                label = f"{s['name']} / {exp_names.get(eid, eid)}"
+                blueprints += _blueprints(eid, bp_cache, notes, label)
+                prices_nf.update(_prices(eid, False, price_cache, notes, label))
+                prices_f.update(_prices(eid, True, price_cache, notes, label))
             sf2bp = {b["scryfall_id"]: b["id"] for b in blueprints if b.get("scryfall_id")}
-            uuid2sf = {c["uuid"]: (c.get("identifiers") or {}).get("scryfallId")
-                       for c in set_data.get("cards", [])}
-            uuid2name = {c["uuid"]: c.get("name", "?") for c in set_data.get("cards", [])}
-            prices_nf = expansion_prices(exp_id, foil=False)
-            prices_f = expansion_prices(exp_id, foil=True)
-            related_bps = None
+            used = ", ".join(exp_names.get(e, str(e)) for e in exp_ids)
+
             for p in products:
                 box_bp = find_box_blueprint(blueprints, p["name_words"], p.get("plain_fallback", False))
                 if not box_bp:
-                    # ripiego: i prodotti sigillati potrebbero stare in un'altra sezione del set
-                    if related_bps is None:
-                        related_bps = []
-                        for rel in related_expansions(s["name"], exp_id, all_exps):
-                            try:
-                                related_bps += C.ct_get("/blueprints/export", {"expansion_id": rel["id"]}, timeout=120)
-                            except Exception:
-                                pass
-                            time.sleep(0.5)
-                    box_bp = find_box_blueprint(related_bps, p["name_words"], p.get("plain_fallback", False))
-                if not box_bp:
-                    seen = box_like_names(blueprints + related_bps) or ["nessuno"]
+                    seen = box_like_names(blueprints) or ["nessuno"]
                     notes.append(f"{s['name']}: {p['label']} non trovato su CardTrader. "
                                  f"Prodotti simili: {'; '.join(seen)}")
                     continue
@@ -354,7 +417,8 @@ def evaluate_all(today, notes):
                 if metrics["coverage"] < MIN_COVERAGE:
                     summary, details = coverage_report(model)
                     notes.append(f"{s['name']} - {p['label']}: prezzi noti {metrics['coverage'] * 100:.0f}%, "
-                                 f"mancano: {summary}. " + " | ".join(details))
+                                 f"mancano: {summary}. " + " | ".join(details)
+                                 + f" [espansioni CardTrader usate: {used}]")
                 results.append({"code": s["code"], "set": s["name"], "product": p["label"],
                                 "box_price": ref["market"], "packs": packs,
                                 "packs_source": packs_source, **metrics})
