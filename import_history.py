@@ -17,12 +17,20 @@ import traceback
 import pandas as pd
 import requests
 
-import box_ev
 import common as C
 
 PRICES_URL = "https://mtgjson.com/api/v5/AllPrices.json.gz"
 PROVIDERS = ["cardmarket", "tcgplayer", "cardkingdom", "cardsphere", "manapool"]   # in ordine di preferenza
 OUT_FILE = "data/history_mtgjson.csv"
+
+
+def load_mtgjson_set(code):
+    """File MTGJSON di un singolo set (contiene le carte con uuid e ID Scryfall)."""
+    name = code.upper()
+    if name in {"CON", "PRN", "AUX", "NUL"}:      # nomi riservati su Windows: MTGJSON aggiunge "_"
+        name += "_"
+    data = C.web_get_json(f"https://mtgjson.com/api/v5/{name}.json", timeout=180, allow_404=True)
+    return data.get("data") if data else None
 
 
 def my_card_keys():
@@ -69,12 +77,12 @@ def scryfall_to_uuid(info, notes):
     for code, sf_ids in by_set.items():
         data = None
         try:
-            data = box_ev.load_mtgjson_set(code)
+            data = load_mtgjson_set(code)
             if data is None:                       # codice diverso: lo chiedo a Scryfall
                 card = C.web_get_json(f"https://api.scryfall.com/cards/{sf_ids[0]}", allow_404=True)
                 time.sleep(0.15)
                 if card and card.get("set") and card["set"] != code:
-                    data = box_ev.load_mtgjson_set(card["set"])
+                    data = load_mtgjson_set(card["set"])
         except Exception as e:
             notes.append(f"Set {code}: file MTGJSON non letto ({e})")
         if not data:
