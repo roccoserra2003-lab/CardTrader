@@ -37,6 +37,9 @@ UNDERPRICED_MIN_EUR = 0.50    # e la differenza e' almeno 0,50 EUR
 # True = ricevi ogni giorno un breve riepilogo anche quando non ci sono segnali
 DAILY_SUMMARY = False
 
+# Quanti box mostrare nel dettaglio (carte che pesano di piu', Cardmarket) nel messaggio di STATO
+STATUS_BOX_DETAILS = 2
+
 # Giorni prima di ripetere lo stesso avviso
 COOLDOWN = {"sell": 7, "under": 7, "box": 3, "event": 30}
 # =====================================================================
@@ -335,6 +338,7 @@ def run():
         status += [f"  {r['set']} - {r['product']}: x{r['ratio']:.2f} (box {r['box_price']:.0f} EUR, EV {r['ev_net']:.0f} EUR, "
                    f"{r['packs']} bustine, prezzi noti {r['coverage'] * 100:.0f}%"
                    f"{'' if r['packs_source'] == 'mtgjson' else ', bustine NON verificate'})" for r in top]
+        status += [box_ev.format_line(r) for r in top[:STATUS_BOX_DETAILS]]
         status += [f"Nota: {n}" for n in notes if not n.startswith("AVVISO:")][:25]
         body += "\n" + section("STATO", status)
 
