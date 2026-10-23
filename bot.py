@@ -1,6 +1,6 @@
 """
 MTG Price Bot - versione 2
-- Segnali sulle carte che possiedi (da vendere / prezzo sotto mercato)
+- Segnali di vendita sulle carte che possiedi
 - EV dei box recenti (Play e Collector)
 - Calendario eventi automatico (uscite, rotazione, finestra B&R, ban reali, tornei)
 """
@@ -30,10 +30,6 @@ SELL_ZSCORE = 2.0             # z-score (deviazioni standard sopra la media a 60
 SELL_NEAR_MAX90_PCT = 3       # entro il 3% dal massimo degli ultimi 90 giorni
 SELL_MIN_SCORE = 2
 
-# Segnale "PREZZO SOTTO MERCATO" (solo carte Near Mint)
-UNDERPRICED_PCT = 15          # il mercato parte almeno 15% sopra il tuo prezzo
-UNDERPRICED_MIN_EUR = 0.50    # e la differenza e' almeno 0,50 EUR
-
 # True = ricevi ogni giorno un breve riepilogo anche quando non ci sono segnali
 DAILY_SUMMARY = False
 
@@ -41,7 +37,7 @@ DAILY_SUMMARY = False
 STATUS_BOX_DETAILS = 2
 
 # Giorni prima di ripetere lo stesso avviso
-COOLDOWN = {"sell": 7, "under": 7, "box": 3, "event": 30}
+COOLDOWN = {"sell": 7, "box": 3, "event": 30}
 # =====================================================================
 
 PRICES_FILE = "data/prices.csv"
@@ -216,17 +212,7 @@ def inventory_part(today):
         qty = sum(i["quantity"] for i in items)
         market = snap["market"]
 
-        # a) prezzo sotto mercato (funziona dal primo giorno)
-        for item in items:
-            if item["condition"] != "Near Mint" or item["price"] <= 0:
-                continue
-            gap = market - item["price"]
-            if gap >= UNDERPRICED_MIN_EUR and gap / item["price"] * 100 >= UNDERPRICED_PCT:
-                alerts.append(("under", str(item["id"]),
-                               f"- {name} x{item['quantity']}: il tuo prezzo e' {item['price']:.2f} EUR, "
-                               f"il mercato parte da {market:.2f} EUR (+{gap / item['price'] * 100:.0f}%)"))
-
-        # b) segnale "vendi ora" (serve storico)
+        # segnale "vendi ora" (serve storico)
         if market < MIN_PRICE or key not in series_by_key:
             continue
         st = analyse(series_by_key[key], today_ts)
@@ -319,7 +305,6 @@ def run():
     parts = [
         section("EV BOX SOPRA IL PREZZO (rapporto EV netto / prezzo box)", by_type("box")),
         section("VENDI ORA (prezzo alto rispetto allo storico)", by_type("sell")),
-        section("PREZZO SOTTO IL MERCATO (potresti alzarlo)", by_type("under")),
         section("BAN / UNBAN", ban_lines(ban_changes, stats["names"])),
         section("EVENTI IN ARRIVO", by_type("event")),
         section("AVVISI", [n for n in notes if n.startswith("AVVISO:")]),
