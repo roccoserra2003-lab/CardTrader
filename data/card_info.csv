@@ -1,0 +1,454 @@
+blueprint_id,name,set_code,n_printings,first_printing,latest_printing,is_reserved,edhrec_rank,standard
+10087,Custodian of the Trove,dtk,1,2015-03-27,2015-03-27,False,27649,False
+10130,Naturalize,dtk,24,2002-10-07,2022-07-07,False,2442,False
+10138,Epic Confrontation,dtk,4,2015-03-27,2022-11-18,False,16240,False
+10144,Conifer Strider,dtk,2,2015-03-27,2020-09-26,False,23052,False
+10181,Kindled Fury,dtk,8,2008-02-01,2024-11-15,False,18492,True
+10248,Sight Beyond Sight,dtk,2,2015-03-27,2024-12-10,False,26608,False
+14459,Pit Fight,gtc,3,2013-02-01,2024-02-23,False,11318,False
+14562,Forced Adaptation,gtc,2,2013-02-01,2024-01-12,False,8493,False
+14597,Act of Treason,gtc,17,2009-07-17,2024-01-12,False,4847,False
+16669,Garruk's Companion,m12,2,2010-07-16,2011-07-15,False,23939,False
+18126,Overwhelming Stampede,m11,10,2010-07-16,2026-06-26,False,523,False
+18128,Nature's Spiral,m11,5,2009-07-17,2018-04-27,False,12627,False
+18131,Llanowar Elves,m11,51,1993-08-05,2026-09-02,False,55,True
+18137,Giant Growth,m11,55,1993-08-05,2026-06-26,False,3293,True
+18176,Fling,m11,16,1998-03-02,2024-11-15,False,1453,False
+19369,Primal Bellow,zen,1,2009-10-02,2009-10-02,False,7374,False
+21328,Winnower Patrol,mor,1,2008-02-01,2008-02-01,False,27126,False
+21330,Unstoppable Ash,mor,2,2008-02-01,2020-09-26,False,14763,False
+21347,Elvish Warrior,mor,9,2002-10-07,2020-09-26,False,18093,False
+21352,Bramblewood Paragon,mor,5,2002-06-24,2020-09-26,False,7144,False
+21367,Roar of the Crowd,mor,1,2008-02-01,2008-02-01,False,20239,False
+21372,Mudbutton Clanger,mor,1,2008-02-01,2008-02-01,False,25853,False
+21375,Kindled Fury,mor,8,2008-02-01,2024-11-15,False,18492,True
+21379,Brighthearth Banneret,mor,1,2008-02-01,2008-02-01,False,6308,False
+21382,Boldwyr Heavyweights,mor,1,2008-02-01,2008-02-01,False,12512,False
+21663,Incremental Growth,lrw,6,2007-10-12,2021-08-26,False,18150,False
+21672,Fistful of Force,lrw,1,2007-10-12,2007-10-12,False,28753,False
+234894,Soul of New Phyrexia,plist,8,2014-07-17,2023-08-04,False,3547,False
+234910,Sword of War and Peace,plist,8,2002-06-24,2025-08-19,False,2727,False
+234911,Tyvar Kell,plist,5,2002-06-24,2024-11-15,False,4297,False
+231863,"Koth, Fire of Resistance",one,3,2022-07-09,2023-02-10,False,4241,False
+231890,Swamp,one,233,1993-08-05,2027-04-09,False,,True
+234118,Zenith Chronicler,one,2,2023-02-10,2023-02-10,False,2683,False
+234121,"Venser, Corpse Puppet",one,2,2023-02-10,2023-02-10,False,12513,False
+234123,The Seedcore,one,2,2023-02-10,2023-02-10,False,5763,False
+234124,"Malcator, Purity Overseer",one,2,2023-02-10,2023-02-10,False,9693,False
+234126,"Kethek, Crucible Goliath",one,2,2023-02-10,2023-02-10,False,9749,False
+234139,"Lukka, Bound to Ruin",one,2,2023-02-10,2023-02-10,False,14135,False
+234140,The Filigree Sylex,one,2,2023-02-10,2023-02-10,False,16443,False
+234152,Monument to Perfection,one,2,2023-02-10,2023-02-10,False,14471,False
+234157,"Geth, Thane of Contracts",one,2,2023-02-10,2023-02-10,False,20713,False
+234161,The Monumental Facade,one,2,2023-02-10,2023-02-10,False,13625,False
+234167,Norn's Wellspring,one,2,2023-02-10,2023-02-10,False,7239,False
+234169,"Ria Ivor, Bane of Bladehold",one,2,2023-02-10,2023-02-10,False,10110,False
+234170,Skrelv's Hive,one,3,2023-02-10,2026-10-02,False,1902,False
+234757,Capricious Hellraiser,one,2,2023-02-10,2023-02-10,False,14916,False
+234780,Annex Sentry,one,2,2022-07-09,2023-02-10,False,9034,False
+234782,Ossification,one,3,2020-09-26,2024-08-02,False,4390,False
+234798,Minor Misstep,one,1,2023-02-10,2023-02-10,False,14965,False
+234807,Bladehold War-Whip,one,1,2023-02-10,2023-02-10,False,5967,False
+234826,Necrogen Rotpriest,one,1,2023-02-10,2023-02-10,False,7039,False
+234828,Vanish into Eternity,one,2,2020-09-26,2023-02-10,False,15235,False
+234833,Myr Convert,one,1,2023-02-10,2023-02-10,False,2476,False
+234839,Sheoldred's Edict,one,4,2020-09-26,2026-04-24,False,1149,False
+234840,Nimraiser Paladin,one,1,2023-02-10,2023-02-10,False,15825,False
+234844,Resistance Reunited,one,2,2023-02-10,2024-11-15,False,14592,False
+234857,Experimental Augury,one,3,2020-09-26,2025-08-01,False,1327,False
+234861,Anoint with Affliction,one,1,2023-02-10,2023-02-10,False,11542,False
+235067,Volt Charge,one,3,2011-05-13,2023-02-10,False,7443,False
+235068,Apostle of Invasion,one,1,2023-02-10,2023-02-10,False,18709,False
+235069,Noxious Assault,one,1,2023-02-10,2023-02-10,False,7881,False
+235070,Feed the Infection,one,1,2023-02-10,2023-02-10,False,10728,False
+235071,Jawbone Duelist,one,1,2023-02-10,2023-02-10,False,10080,False
+235072,Incisor Glider,one,1,2023-02-10,2023-02-10,False,19968,False
+235073,Urabrask's Anointer,one,1,2023-02-10,2023-02-10,False,21823,False
+235074,Swooping Lookout,one,1,2023-02-10,2023-02-10,False,10179,False
+235076,Sinew Dancer,one,1,2023-02-10,2023-02-10,False,18243,False
+235197,Veil of Assimilation,one,1,2023-02-10,2023-02-10,False,18833,False
+235198,Cacophony Scamp,one,1,2023-02-10,2023-02-10,False,11753,False
+235199,Awaken the Sleeper,one,1,2023-02-10,2023-02-10,False,16664,False
+235200,Expand the Sphere,one,1,2023-02-10,2023-02-10,False,5324,False
+235201,Resistance Skywarden,one,2,2023-02-10,2024-11-15,False,24846,False
+235203,Oxidda Finisher,one,1,2023-02-10,2023-02-10,False,19025,False
+235204,Prosthetic Injector,one,1,2023-02-10,2023-02-10,False,9403,False
+235205,Sawblade Scamp,one,1,2023-02-10,2023-02-10,False,10827,False
+235208,Infested Fleshcutter,one,1,2023-02-10,2023-02-10,False,10098,False
+235209,Gleeful Demolition,one,2,2022-07-09,2023-02-10,False,7896,False
+235210,Bonepicker Skirge,one,1,2023-02-10,2023-02-10,False,17579,False
+235211,Tyvar's Stand,one,3,2020-09-26,2026-04-24,False,716,False
+235212,Tamiyo's Immobilizer,one,1,2023-02-10,2023-02-10,False,22685,False
+235213,Hexgold Halberd,one,1,2023-02-10,2023-02-10,False,9707,False
+235363,Maze Skullbomb,one,1,2023-02-10,2023-02-10,False,17442,False
+235364,Compleat Devotion,one,1,2023-02-10,2023-02-10,False,17843,False
+235366,Dross Skullbomb,one,1,2023-02-10,2023-02-10,False,12579,False
+235367,Viral Spawning,one,1,2023-02-10,2023-02-10,False,16760,False
+235368,Scheming Aspirant,one,1,2023-02-10,2023-02-10,False,6934,False
+235369,Basilica Skullbomb,one,1,2023-02-10,2023-02-10,False,15070,False
+235370,Surgical Skullbomb,one,2,2020-09-26,2023-02-10,False,13713,False
+235371,Incubation Sac,one,1,2023-02-10,2023-02-10,False,20577,False
+235372,Furnace Skullbomb,one,1,2023-02-10,2023-02-10,False,17122,False
+235373,Chittering Skitterling,one,1,2023-02-10,2023-02-10,False,14783,False
+235374,Ichorplate Golem,one,1,2023-02-10,2023-02-10,False,19799,False
+235375,Transplant Theorist,one,1,2023-02-10,2023-02-10,False,9882,False
+235385,Magmatic Sprinter,one,1,2023-02-10,2023-02-10,False,21643,False
+235570,Bladed Ambassador,one,1,2023-02-10,2023-02-10,False,21466,False
+235572,Ambulatory Edifice,one,1,2023-02-10,2023-02-10,False,26895,False
+235573,Furnace Punisher,one,2,2020-09-26,2023-02-10,False,21495,False
+235574,Watchful Blisterzoa,one,1,2023-02-10,2023-02-10,False,23458,False
+235575,Atraxa's Skitterfang,one,1,2023-02-10,2023-02-10,False,10880,False
+235576,Serum Snare,one,1,2023-02-10,2023-02-10,False,4608,False
+235732,Fleshless Gladiator,one,1,2023-02-10,2023-02-10,False,24856,False
+235733,Vat of Rebirth,one,2,2020-09-26,2023-02-10,False,2704,False
+235735,Charforger,one,1,2023-02-10,2023-02-10,False,20990,False
+235736,Rustvine Cultivator,one,1,2023-02-10,2023-02-10,False,16357,False
+235739,Nahiri's Sacrifice,one,1,2023-02-10,2023-02-10,False,22604,False
+235740,Exuberant Fuseling,one,2,2020-09-26,2023-02-10,False,13241,False
+235741,Phyrexian Atlas,one,1,2023-02-10,2023-02-10,False,7895,False
+235743,Quicksilver Fisher,one,2,2020-09-26,2023-02-10,False,21813,False
+235744,Stinging Hivemaster,one,1,2023-02-10,2023-02-10,False,15990,False
+235745,Ravenous Necrotitan,one,1,2023-02-10,2023-02-10,False,23042,False
+235747,Trawler Drake,one,1,2023-02-10,2023-02-10,False,17497,False
+236028,The Fair Basilica,one,1,2023-02-10,2023-02-10,False,7131,False
+236029,Porcelain Zealot,one,1,2023-02-10,2023-02-10,False,19269,False
+236030,Churning Reservoir,one,1,2023-02-10,2023-02-10,False,19780,False
+236031,Tyrranax Atrocity,one,1,2023-02-10,2023-02-10,False,11869,False
+236032,The Dross Pits,one,1,2023-02-10,2023-02-10,False,7715,False
+236033,The Surgical Bay,one,2,2019-12-02,2023-02-10,False,9345,False
+236034,Ribskiff,one,1,2023-02-10,2023-02-10,False,16470,False
+236035,Dune Mover,one,1,2023-02-10,2023-02-10,False,10376,False
+236036,Duress,one,36,1995-01-01,2026-09-02,False,3260,True
+236038,Against All Odds,one,2,2020-09-26,2023-02-10,False,9950,False
+236039,Duelist of Deep Faith,one,1,2023-02-10,2023-02-10,False,14455,False
+236040,Plague Nurse,one,1,2023-02-10,2023-02-10,False,14411,False
+236041,Armored Scrapgorger,one,1,2023-02-10,2023-02-10,False,4691,False
+236042,The Hunter Maze,one,1,2023-02-10,2023-02-10,False,7331,False
+236047,Bring the Ending,one,1,2023-02-10,2023-02-10,False,10472,False
+236049,The Autonomous Furnace,one,1,2023-02-10,2023-02-10,False,8414,False
+236050,Atmosphere Surgeon,one,1,2023-02-10,2023-02-10,False,19947,False
+236051,Reject Imperfection,one,1,2023-02-10,2023-02-10,False,4770,False
+236052,Rebel Salvo,one,1,2023-02-10,2023-02-10,False,11855,False
+236110,Evolving Adaptive,one,1,2023-02-10,2023-02-10,False,17108,False
+236111,Font of Progress,one,1,2023-02-10,2023-02-10,False,22308,False
+236112,Free from Flesh,one,1,2023-02-10,2023-02-10,False,18993,False
+236113,Cephalopod Sentry,one,1,2023-02-10,2023-02-10,False,12776,False
+236114,Sylvok Battle-Chair,one,1,2023-02-10,2023-02-10,False,21805,False
+236115,Necrosquito,one,1,2023-02-10,2023-02-10,False,15889,False
+236116,Voidwing Hybrid,one,1,2023-02-10,2023-02-10,False,7565,False
+236117,Crawling Chorus,one,1,2023-02-10,2023-02-10,False,6531,False
+236119,Hexgold Hoverwings,one,2,2023-02-10,2024-11-15,False,12180,False
+236120,Cinderslash Ravager,one,1,2023-02-10,2023-02-10,False,24102,False
+236121,Distorted Curiosity,one,1,2023-02-10,2023-02-10,False,11642,False
+236252,Hazardous Blast,one,1,2023-02-10,2023-02-10,False,10525,False
+236253,Ichorspit Basilisk,one,1,2023-02-10,2023-02-10,False,8279,False
+236255,Ruthless Predation,one,1,2023-02-10,2023-02-10,False,19515,False
+236256,Flensing Raptor,one,1,2023-02-10,2023-02-10,False,12181,False
+236257,Contagious Vorrac,one,2,2020-09-26,2023-02-10,False,12943,False
+236258,Thrill of Possibility,one,15,2019-10-04,2025-09-26,False,214,True
+236259,Gulping Scraptrap,one,1,2023-02-10,2023-02-10,False,10783,False
+236262,Unctus's Retrofitter,one,1,2023-02-10,2023-02-10,False,21083,False
+236263,Prophetic Prism,one,17,2010-04-23,2024-11-15,False,5004,True
+236264,Serum-Core Chimera,one,1,2023-02-10,2023-02-10,False,23716,False
+236265,Titanic Growth,one,11,2011-07-15,2023-09-08,False,6524,True
+236266,Zealot's Conviction,one,1,2023-02-10,2023-02-10,False,17686,False
+236267,Adaptive Sporesinger,one,1,2023-02-10,2023-02-10,False,11286,False
+236268,Predation Steward,one,1,2023-02-10,2023-02-10,False,24061,False
+236269,Charge of the Mites,one,1,2023-02-10,2023-02-10,False,9715,False
+236270,Plated Onslaught,one,1,2023-02-10,2023-02-10,False,19211,False
+236271,Gitaxian Raptor,one,1,2023-02-10,2023-02-10,False,25152,False
+236272,Mandible Justiciar,one,1,2023-02-10,2023-02-10,False,17030,False
+236273,Chimney Rabble,one,1,2023-02-10,2023-02-10,False,17375,False
+236274,Myr Custodian,one,1,2023-02-10,2023-02-10,False,12789,False
+236277,Terramorphic Expanse,one,57,2002-06-24,2026-06-26,False,30,True
+236278,Myr Kinsmith,one,1,2023-02-10,2023-02-10,False,7545,False
+236279,Escaped Experiment,one,1,2023-02-10,2023-02-10,False,22206,False
+236280,Vivisection Evangelist,one,1,2023-02-10,2023-02-10,False,21929,False
+236281,Gitaxian Anatomist,one,1,2023-02-10,2023-02-10,False,15665,False
+236283,Oil-Gorger Troll,one,1,2023-02-10,2023-02-10,False,24682,False
+236284,Eye of Malcator,one,1,2023-02-10,2023-02-10,False,23753,False
+236285,Ichor Synthesizer,one,1,2023-02-10,2023-02-10,False,22389,False
+236286,Basilica Shepherd,one,1,2023-02-10,2023-02-10,False,10666,False
+236287,Sheoldred's Headcleaver,one,1,2023-02-10,2023-02-10,False,14757,False
+236288,Orthodoxy Enforcer,one,1,2023-02-10,2023-02-10,False,24266,False
+236289,Malcator's Watcher,one,2,2023-02-10,2024-11-15,False,14831,False
+236291,Testament Bearer,one,1,2023-02-10,2023-02-10,False,22249,False
+236292,Shrapnel Slinger,one,1,2023-02-10,2023-02-10,False,20842,False
+236293,Chrome Prowler,one,2,2023-02-10,2024-11-15,False,20050,False
+236294,Furnace Strider,one,1,2023-02-10,2023-02-10,False,22957,False
+236296,Offer Immortality,one,2,2023-02-10,2024-11-15,False,5562,True
+236297,Cutthroat Centurion,one,1,2023-02-10,2023-02-10,False,23247,False
+236298,Maze's Mantle,one,1,2023-02-10,2023-02-10,False,21389,False
+236300,Annihilating Glare,one,1,2023-02-10,2023-02-10,False,7824,False
+236301,Glistener Seer,one,1,2023-02-10,2023-02-10,False,19084,False
+236302,Forgehammer Centurion,one,1,2023-02-10,2023-02-10,False,22404,False
+236303,Meldweb Strider,one,1,2023-02-10,2023-02-10,False,25375,False
+236304,Axiom Engraver,one,1,2023-02-10,2023-02-10,False,20962,False
+236305,Vivisurgeon's Insight,one,1,2023-02-10,2023-02-10,False,7865,False
+236306,Indoctrination Attendant,one,1,2023-02-10,2023-02-10,False,13502,False
+236307,Molten Rebuke,one,1,2023-02-10,2023-02-10,False,23451,False
+236308,Blazing Crescendo,one,4,2020-09-26,2026-10-02,False,3423,True
+236309,Skyscythe Engulfer,one,1,2023-02-10,2023-02-10,False,19550,False
+236310,Barbed Batterfist,one,2,2020-09-26,2023-02-10,False,14576,False
+236311,Cruel Grimnarch,one,1,2023-02-10,2023-02-10,False,18923,False
+236312,Meldweb Curator,one,1,2023-02-10,2023-02-10,False,18964,False
+236313,Goldwarden's Helm,one,1,2023-02-10,2023-02-10,False,19164,False
+236314,Kuldotha Cackler,one,1,2023-02-10,2023-02-10,False,23007,False
+236315,Lattice-Blade Mantis,one,1,2023-02-10,2023-02-10,False,23135,False
+236316,Copper Longlegs,one,1,2023-02-10,2023-02-10,False,11339,False
+234341,"Tyvar, Jubilant Brawler",cone,2,2023-02-10,2023-02-10,False,2233,False
+234783,Goliath Hatchery,cone,1,2023-02-10,2023-02-10,False,15306,False
+234790,Myr Convert,cone,1,2023-02-10,2023-02-10,False,2476,False
+234843,"Ezuri, Stalker of Spheres",cone,2,2023-02-10,2023-02-10,False,3266,False
+235085,Sinew Dancer,cone,1,2023-02-10,2023-02-10,False,18243,False
+235087,"Malcator, Purity Overseer",cone,2,2023-02-10,2023-02-10,False,9693,False
+235225,Bonepicker Skirge,cone,1,2023-02-10,2023-02-10,False,17579,False
+235379,Sawblade Scamp,cone,1,2023-02-10,2023-02-10,False,10827,False
+235384,Urabrask's Anointer,cone,1,2023-02-10,2023-02-10,False,21823,False
+235569,Cankerbloom,cone,2,2020-09-26,2023-02-10,False,827,False
+235748,"Vraan, Executioner Thane",cone,3,2020-09-26,2023-02-10,False,4326,False
+235752,Blightbelly Rat,cone,1,2023-02-10,2023-02-10,False,2797,False
+235756,Quicksilver Fisher,cone,2,2020-09-26,2023-02-10,False,21813,False
+236058,Thrummingbird,cone,10,2010-10-01,2026-09-02,False,829,False
+236062,Phyrexian Vindicator,cone,2,2023-02-10,2023-02-10,False,3168,False
+236322,Furnace Punisher,cone,2,2020-09-26,2023-02-10,False,21495,False
+236324,Bladed Ambassador,cone,1,2023-02-10,2023-02-10,False,21466,False
+236331,Rustvine Cultivator,cone,1,2023-02-10,2023-02-10,False,16357,False
+236016,Mirage Mockery,onc,1,2023-02-10,2023-02-10,False,9636,False
+236017,Tangleweave Armor,onc,2,2023-02-10,2024-11-15,False,11533,False
+236025,Synthesis Pod,onc,1,2023-02-10,2023-02-10,False,16085,False
+288030,Writhing Chrysalis,mh3,2,2020-09-26,2024-06-14,False,7187,False
+288588,Dog Umbra,mh3,1,2024-06-14,2024-06-14,False,7182,False
+288618,Frogmyr Enforcer,mh3,1,2024-06-14,2024-06-14,False,8498,False
+288811,"Skoa, Embermage",mh3,1,2024-06-14,2024-06-14,False,21680,False
+288859,Hydra Trainer,mh3,1,2024-06-14,2024-06-14,False,12710,False
+288860,Nyxborn Hydra,mh3,2,2020-09-26,2024-06-14,False,3464,False
+289407,Utter Insignificance,mh3,1,2024-06-14,2024-06-14,False,7176,False
+289460,Tranquil Landscape,mh3,1,2024-06-14,2024-06-14,False,2168,False
+289584,Kozilek's Command,mh3,3,2023-02-17,2024-06-14,False,2062,False
+289585,Warped Tusker,mh3,1,2024-06-14,2024-06-14,False,13291,False
+289627,Refurbished Familiar,mh3,1,2024-06-14,2024-06-14,False,7642,False
+289656,Pinnacle Monk // Mystic Peak,mh3,1,2024-06-14,2024-06-14,False,533,False
+289660,Nadier's Nightblade,mh3,5,2020-09-26,2024-08-02,False,860,False
+291541,"Senu, Keen-Eyed Protector",acr,1,2024-07-05,2024-07-05,False,4497,False
+291556,Eagle Vision,acr,1,2024-07-05,2024-07-05,False,4601,False
+291572,Phantom Blade,acr,1,2024-07-05,2024-07-05,False,10531,False
+291685,Murder,acr,20,2002-06-24,2024-11-15,False,880,True
+291692,Mortify,acr,26,2002-06-24,2025-06-13,False,581,True
+291616,"Ezio, Brash Novice",cacr,1,2024-07-05,2024-07-05,False,13023,False
+332089,Dragoon's Wyvern,fin,1,2025-06-13,2025-06-13,False,20496,True
+332122,Malboro,fin,1,2025-06-13,2025-06-13,False,8915,True
+332912,Zack Fair,fin,2,1995-01-01,2025-06-13,False,2619,True
+333166,Freya Crescent,fin,1,2025-06-13,2025-06-13,False,4622,True
+333792,"Edgar, King of Figaro",fin,2,2025-06-13,2025-06-13,False,9103,True
+334251,The Gold Saucer,fin,1,2025-06-13,2025-06-13,False,3317,True
+334824,Light of Judgment,fin,1,2025-06-13,2025-06-13,False,14892,True
+334935,Aerith Rescue Mission,fin,1,2025-06-13,2025-06-13,False,11501,True
+334947,Thief's Knife,fin,1,2025-06-13,2025-06-13,False,10609,True
+334970,Bard's Bow,fin,1,2025-06-13,2025-06-13,False,16058,True
+335205,Summon: Choco/Mog,fin,1,2025-06-13,2025-06-13,False,6860,True
+335207,Summon: Fat Chocobo,fin,1,2025-06-13,2025-06-13,False,4583,True
+333731,"Thrasios, Triton Hero",fca,6,2002-06-24,2025-06-13,False,2563,False
+352635,"Eirdu, Carrier of Dawn // Isilu, Carrier of Twilight",ecl,1,2026-01-23,2026-01-23,False,5841,True
+352643,Formidable Speaker,ecl,2,2026-01-23,2026-01-23,False,1274,True
+352657,Overgrown Tomb,ecl,13,2002-06-24,2026-11-13,False,71,True
+352661,Temple Garden,ecl,13,2002-06-24,2026-11-13,False,81,True
+363081,Ashling's Command,ecl,2,2026-01-23,2026-01-23,False,5931,True
+363083,Unexpected Assistance,ecl,1,2026-01-23,2026-01-23,False,10742,True
+363084,High Perfect Morcant,ecl,2,2026-01-23,2026-01-23,False,3581,True
+363086,Perfect Intimidation,ecl,1,2026-01-23,2026-01-23,False,18222,True
+363645,Dose of Dawnglow,ecl,1,2026-01-23,2026-01-23,False,16802,True
+364990,Changeling Wayfinder,ecl,2,2020-09-26,2026-01-23,False,4489,True
+364991,Rooftop Percher,ecl,1,2026-01-23,2026-01-23,False,14338,True
+364992,Adept Watershaper,ecl,2,2026-01-23,2026-01-23,False,6407,True
+364994,Appeal to Eirdu,ecl,1,2026-01-23,2026-01-23,False,23074,True
+364995,Bark of Doran,ecl,1,2026-01-23,2026-01-23,False,15080,True
+364999,Clachan Festival,ecl,1,2026-01-23,2026-01-23,False,16528,True
+365000,Crib Swap,ecl,10,2007-10-12,2026-01-23,False,2465,True
+365001,Curious Colossus,ecl,2,2026-01-23,2026-01-23,False,8089,True
+365002,Encumbered Reejerey,ecl,1,2026-01-23,2026-01-23,False,22550,True
+365003,Evershrike's Gift,ecl,1,2026-01-23,2026-01-23,False,17691,True
+365004,Flock Impostor,ecl,2,2020-09-26,2026-01-23,False,10692,True
+365005,Gallant Fowlknight,ecl,1,2026-01-23,2026-01-23,False,20638,True
+365006,Goldmeadow Nomad,ecl,1,2026-01-23,2026-01-23,False,18743,True
+365007,Keep Out,ecl,1,2026-01-23,2026-01-23,False,14994,True
+365009,Kinsbaile Aspirant,ecl,1,2026-01-23,2026-01-23,False,19802,True
+365010,Kinscaer Sentry,ecl,2,2026-01-23,2026-01-23,False,7278,True
+365011,Kithkeeper,ecl,1,2026-01-23,2026-01-23,False,23614,True
+365012,Liminal Hold,ecl,1,2026-01-23,2026-01-23,False,18190,True
+365013,Meanders Guide,ecl,1,2026-01-23,2026-01-23,False,18752,True
+365014,Moonlit Lamenter,ecl,1,2026-01-23,2026-01-23,False,16203,True
+365015,Personify,ecl,2,2020-09-26,2026-01-23,False,5228,True
+365016,Protective Response,ecl,1,2026-01-23,2026-01-23,False,16808,True
+365017,Pyrrhic Strike,ecl,1,2026-01-23,2026-01-23,False,17141,True
+365018,Reluctant Dounguard,ecl,1,2026-01-23,2026-01-23,False,22585,True
+365019,"Rhys, the Evermore",ecl,2,2026-01-23,2026-01-23,False,11186,True
+365020,Riverguard's Reflexes,ecl,1,2026-01-23,2026-01-23,False,18972,True
+365021,Shore Lurker,ecl,1,2026-01-23,2026-01-23,False,24418,True
+365022,Slumbering Walker,ecl,2,2026-01-23,2026-01-23,False,16428,True
+365023,Spiral into Solitude,ecl,1,2026-01-23,2026-01-23,False,17180,True
+365024,Sun-Dappled Celebrant,ecl,1,2026-01-23,2026-01-23,False,21537,True
+365025,Thoughtweft Imbuer,ecl,1,2026-01-23,2026-01-23,False,19130,True
+365026,Timid Shieldbearer,ecl,1,2026-01-23,2026-01-23,False,21649,True
+365027,Tributary Vaulter,ecl,1,2026-01-23,2026-01-23,False,23638,True
+365028,Wanderbrine Preacher,ecl,1,2026-01-23,2026-01-23,False,17788,True
+365029,Wanderbrine Trapper,ecl,1,2026-01-23,2026-01-23,False,20407,True
+365031,Aquitect's Defenses,ecl,1,2026-01-23,2026-01-23,False,13931,True
+365032,Blossombind,ecl,1,2026-01-23,2026-01-23,False,14219,True
+365035,Flitterwing Nuisance,ecl,2,2026-01-23,2026-01-23,False,8384,True
+365036,Glamer Gifter,ecl,1,2026-01-23,2026-01-23,False,12594,True
+365037,Glamermite,ecl,1,2026-01-23,2026-01-23,False,13093,True
+365038,Glen Elendra Guardian,ecl,2,2026-01-23,2026-01-23,False,5682,True
+365039,Glen Elendra's Answer,ecl,2,2026-01-23,2026-01-23,False,7028,True
+365040,Gravelgill Scoundrel,ecl,1,2026-01-23,2026-01-23,False,20020,True
+365043,Kulrath Mystic,ecl,1,2026-01-23,2026-01-23,False,25253,True
+365045,Lofty Dreams,ecl,1,2026-01-23,2026-01-23,False,19517,True
+365047,Noggle the Mind,ecl,1,2026-01-23,2026-01-23,False,10844,True
+365049,Omni-Changeling,ecl,2,2020-09-26,2026-01-23,False,5070,True
+365050,Pestered Wellguard,ecl,1,2026-01-23,2026-01-23,False,16653,True
+365051,Rime Chill,ecl,1,2026-01-23,2026-01-23,False,21567,True
+365052,Rimefire Torque,ecl,2,2026-01-23,2026-01-23,False,10686,True
+365053,Rimekin Recluse,ecl,1,2026-01-23,2026-01-23,False,19042,True
+365054,Run Away Together,ecl,10,2019-10-04,2026-01-23,False,1669,True
+365055,Shinestriker,ecl,1,2026-01-23,2026-01-23,False,10588,True
+365056,Silvergill Mentor,ecl,1,2026-01-23,2026-01-23,False,16167,True
+365057,Silvergill Peddler,ecl,1,2026-01-23,2026-01-23,False,18394,True
+365058,Spell Snare,ecl,5,2006-05-05,2026-01-23,False,8397,True
+365059,Stratosoarer,ecl,1,2026-01-23,2026-01-23,False,22695,True
+365060,Summit Sentinel,ecl,1,2026-01-23,2026-01-23,False,21599,True
+365062,Swat Away,ecl,1,2026-01-23,2026-01-23,False,17827,True
+365063,Tanufel Rimespeaker,ecl,1,2026-01-23,2026-01-23,False,11619,True
+365064,Temporal Cleansing,ecl,2,2023-04-21,2026-01-23,False,12792,True
+365065,Thirst for Identity,ecl,1,2026-01-23,2026-01-23,False,10003,True
+365067,Wanderwine Distracter,ecl,1,2026-01-23,2026-01-23,False,23141,True
+365068,Wanderwine Farewell,ecl,1,2026-01-23,2026-01-23,False,18657,True
+365069,Wild Unraveling,ecl,1,2026-01-23,2026-01-23,False,12101,True
+365070,Auntie's Sentence,ecl,1,2026-01-23,2026-01-23,False,15336,True
+365071,Barbed Bloodletter,ecl,1,2026-01-23,2026-01-23,False,16473,True
+365072,Bile-Vial Boggart,ecl,1,2026-01-23,2026-01-23,False,12951,True
+365073,Blight Rot,ecl,1,2026-01-23,2026-01-23,False,8905,True
+365074,Blighted Blackthorn,ecl,1,2026-01-23,2026-01-23,False,16220,True
+365076,Boggart Mischief,ecl,1,2026-01-23,2026-01-23,False,8754,True
+365077,Boggart Prankster,ecl,1,2026-01-23,2026-01-23,False,22287,True
+365078,Bogslither's Embrace,ecl,1,2026-01-23,2026-01-23,False,10105,True
+365081,Darkness Descends,ecl,1,2026-01-23,2026-01-23,False,10057,True
+365083,Dawnhand Eulogist,ecl,1,2026-01-23,2026-01-23,False,13729,True
+365084,Dream Seizer,ecl,1,2026-01-23,2026-01-23,False,17696,True
+365086,Gnarlbark Elm,ecl,1,2026-01-23,2026-01-23,False,21693,True
+365087,Graveshifter,ecl,6,2019-06-14,2026-01-23,False,2823,True
+365090,Heirloom Auntie,ecl,1,2026-01-23,2026-01-23,False,15281,True
+365091,Iron-Shield Elf,ecl,1,2026-01-23,2026-01-23,False,12250,True
+365092,Moonglove Extractor,ecl,1,2026-01-23,2026-01-23,False,14305,True
+365095,Mudbutton Cursetosser,ecl,1,2026-01-23,2026-01-23,False,18322,True
+365096,Nameless Inversion,ecl,6,2002-06-24,2026-01-23,False,8229,True
+365097,Nightmare Sower,ecl,1,2026-01-23,2026-01-23,False,13103,True
+365098,Requiting Hex,ecl,1,2026-01-23,2026-01-23,False,16165,True
+365099,Retched Wretch,ecl,1,2026-01-23,2026-01-23,False,21501,True
+365100,Scarblade Scout,ecl,1,2026-01-23,2026-01-23,False,13663,True
+365101,Scarblade's Malice,ecl,1,2026-01-23,2026-01-23,False,11059,True
+365103,Taster of Wares,ecl,2,2026-01-23,2026-01-23,False,16534,True
+365106,Boldwyr Aggressor,ecl,1,2026-01-23,2026-01-23,False,16471,True
+365107,Boneclub Berserker,ecl,1,2026-01-23,2026-01-23,False,12529,True
+365108,Boulder Dash,ecl,1,2026-01-23,2026-01-23,False,20622,True
+365109,Brambleback Brute,ecl,1,2026-01-23,2026-01-23,False,21020,True
+365110,Burning Curiosity,ecl,1,2026-01-23,2026-01-23,False,8819,True
+365112,Cinder Strike,ecl,1,2026-01-23,2026-01-23,False,17062,True
+365114,Elder Auntie,ecl,1,2026-01-23,2026-01-23,False,14596,True
+365116,Enraged Flamecaster,ecl,1,2026-01-23,2026-01-23,False,14464,True
+365117,Explosive Prodigy,ecl,1,2026-01-23,2026-01-23,False,21375,True
+365118,Feed the Flames,ecl,1,2026-01-23,2026-01-23,False,18209,True
+365119,Flame-Chain Mauler,ecl,1,2026-01-23,2026-01-23,False,25569,True
+365120,Flamebraider,ecl,1,2026-01-23,2026-01-23,False,5355,True
+365121,Flamekin Gildweaver,ecl,1,2026-01-23,2026-01-23,False,19324,True
+365122,Giantfall,ecl,1,2026-01-23,2026-01-23,False,12371,True
+365123,Goatnap,ecl,3,2019-06-14,2026-01-23,False,14867,True
+365124,Goliath Daydreamer,ecl,2,2026-01-23,2026-01-23,False,9592,True
+365125,Gristle Glutton,ecl,1,2026-01-23,2026-01-23,False,12073,True
+365126,Hexing Squelcher,ecl,2,2026-01-23,2026-01-23,False,566,True
+365127,Impolite Entrance,ecl,1,2026-01-23,2026-01-23,False,5713,True
+365128,Kindle the Inner Flame,ecl,1,2026-01-23,2026-01-23,False,13015,True
+365129,Kulrath Zealot,ecl,1,2026-01-23,2026-01-23,False,19105,True
+365130,Lasting Tarfire,ecl,1,2026-01-23,2026-01-23,False,6194,True
+365131,Lavaleaper,ecl,2,2026-01-23,2026-01-23,False,7101,True
+365133,Reckless Ransacking,ecl,1,2026-01-23,2026-01-23,False,6482,True
+365139,Sourbread Auntie,ecl,1,2026-01-23,2026-01-23,False,13621,True
+365141,Squawkroaster,ecl,1,2026-01-23,2026-01-23,False,25856,True
+365142,Sting-Slinger,ecl,2,2020-09-26,2026-01-23,False,17834,True
+365143,Tweeze,ecl,1,2026-01-23,2026-01-23,False,17519,True
+365144,Warren Torchmaster,ecl,1,2026-01-23,2026-01-23,False,13937,True
+365145,Assert Perfection,ecl,1,2026-01-23,2026-01-23,False,17054,True
+365146,Aurora Awakener,ecl,2,2026-01-23,2026-01-23,False,9254,True
+365148,Blossoming Defense,ecl,5,2016-09-30,2026-01-23,False,2531,True
+365150,Bristlebane Outrider,ecl,1,2026-01-23,2026-01-23,False,20696,True
+365152,Champions of the Perfect,ecl,2,2026-01-23,2026-01-23,False,3972,True
+365153,Chomping Changeling,ecl,2,2020-09-26,2026-01-23,False,2390,True
+365154,Crossroads Watcher,ecl,1,2026-01-23,2026-01-23,False,19485,True
+365155,Dawn's Light Archer,ecl,1,2026-01-23,2026-01-23,False,13372,True
+365156,Dundoolin Weaver,ecl,1,2026-01-23,2026-01-23,False,14537,True
+365157,Gilt-Leaf's Embrace,ecl,1,2026-01-23,2026-01-23,False,13346,True
+365158,Great Forest Druid,ecl,1,2026-01-23,2026-01-23,False,5282,True
+365159,Luminollusk,ecl,1,2026-01-23,2026-01-23,False,22486,True
+365160,Lys Alana Dignitary,ecl,1,2026-01-23,2026-01-23,False,12414,True
+365161,Lys Alana Informant,ecl,1,2026-01-23,2026-01-23,False,14950,True
+365162,Midnight Tilling,ecl,1,2026-01-23,2026-01-23,False,8452,True
+365163,Mistmeadow Council,ecl,1,2026-01-23,2026-01-23,False,21583,True
+365164,Moon-Vigil Adherents,ecl,1,2026-01-23,2026-01-23,False,10450,True
+365165,Morcant's Eyes,ecl,1,2026-01-23,2026-01-23,False,9886,True
+365166,Pitiless Fists,ecl,1,2026-01-23,2026-01-23,False,18674,True
+365167,Prismabasher,ecl,1,2026-01-23,2026-01-23,False,18477,True
+365168,Prismatic Undercurrents,ecl,1,2026-01-23,2026-01-23,False,6626,True
+365169,Pummeler for Hire,ecl,1,2026-01-23,2026-01-23,False,25751,True
+365170,Safewright Cavalry,ecl,1,2026-01-23,2026-01-23,False,17268,True
+365172,Selfless Safewright,ecl,2,2026-01-23,2026-01-23,False,3865,True
+365173,Shimmerwilds Growth,ecl,1,2026-01-23,2026-01-23,False,7822,True
+365174,Spry and Mighty,ecl,2,2026-01-23,2026-01-23,False,8696,True
+365175,Surly Farrier,ecl,1,2026-01-23,2026-01-23,False,20634,True
+365176,Tend the Sprigs,ecl,1,2026-01-23,2026-01-23,False,11029,True
+365178,"Trystan, Callous Cultivator // Trystan, Penitent Culler",ecl,1,2026-01-23,2026-01-23,False,11837,True
+365179,Unforgiving Aim,ecl,1,2026-01-23,2026-01-23,False,11402,True
+365180,Vinebred Brawler,ecl,1,2026-01-23,2026-01-23,False,16663,True
+365181,Virulent Emissary,ecl,1,2026-01-23,2026-01-23,False,3053,True
+365182,Wildvine Pummeler,ecl,1,2026-01-23,2026-01-23,False,20771,True
+365183,"Abigale, Eloquent First-Year",ecl,2,2026-01-23,2026-01-23,False,8249,True
+365184,Boggart Cursecrafter,ecl,1,2026-01-23,2026-01-23,False,8665,True
+365188,Chaos Spewer,ecl,1,2026-01-23,2026-01-23,False,18225,True
+365189,Chitinous Graspling,ecl,1,2026-01-23,2026-01-23,False,20246,True
+365191,Deepway Navigator,ecl,2,2026-01-23,2026-01-23,False,18076,True
+365193,Dream Harvest,ecl,2,2026-01-23,2026-01-23,False,6046,True
+365194,Eclipsed Boggart,ecl,1,2026-01-23,2026-01-23,False,11311,True
+365195,Eclipsed Elf,ecl,1,2026-01-23,2026-01-23,False,7918,True
+365196,Eclipsed Flamekin,ecl,1,2026-01-23,2026-01-23,False,8654,True
+365197,Eclipsed Kithkin,ecl,1,2026-01-23,2026-01-23,False,17254,True
+365198,Eclipsed Merrow,ecl,1,2026-01-23,2026-01-23,False,18643,True
+365199,Feisty Spikeling,ecl,1,2026-01-23,2026-01-23,False,15707,True
+365200,Flaring Cinder,ecl,1,2026-01-23,2026-01-23,False,18777,True
+365201,Gangly Stompling,ecl,1,2026-01-23,2026-01-23,False,15194,True
+365202,Glister Bairn,ecl,1,2026-01-23,2026-01-23,False,22609,True
+365203,Grub's Command,ecl,2,2026-01-23,2026-01-23,False,12201,True
+365204,Hovel Hurler,ecl,1,2026-01-23,2026-01-23,False,22262,True
+365207,Merrow Skyswimmer,ecl,1,2026-01-23,2026-01-23,False,20933,True
+365208,Mischievous Sneakling,ecl,1,2026-01-23,2026-01-23,False,13389,True
+365211,Prideful Feastling,ecl,1,2026-01-23,2026-01-23,False,17001,True
+365213,Reaping Willow,ecl,1,2026-01-23,2026-01-23,False,14442,True
+365214,"Sanar, Innovative First-Year",ecl,2,2026-01-23,2026-01-23,False,17767,True
+365216,Stoic Grove-Guide,ecl,1,2026-01-23,2026-01-23,False,16868,True
+365218,"Tam, Mindful First-Year",ecl,2,2026-01-23,2026-01-23,False,5929,True
+365219,Thoughtweft Lieutenant,ecl,1,2026-01-23,2026-01-23,False,17701,True
+365220,Trystan's Command,ecl,2,2026-01-23,2026-01-23,False,7426,True
+365221,Twinflame Travelers,ecl,1,2026-01-23,2026-01-23,False,5159,True
+365222,Vibrance,ecl,2,2026-01-23,2026-01-23,False,8139,True
+365223,Voracious Tome-Skimmer,ecl,1,2026-01-23,2026-01-23,False,7378,True
+365224,Wary Farmer,ecl,1,2026-01-23,2026-01-23,False,19469,True
+365225,Wistfulness,ecl,2,2026-01-23,2026-01-23,False,8087,True
+365226,Chronicle of Victory,ecl,2,2026-01-23,2026-01-23,False,1443,True
+365228,Firdoch Core,ecl,1,2026-01-23,2026-01-23,False,3034,True
+365229,Foraging Wickermaw,ecl,1,2026-01-23,2026-01-23,False,17613,True
+365232,Puca's Eye,ecl,1,2026-01-23,2026-01-23,False,22300,True
+365233,Springleaf Drum,ecl,7,2007-10-12,2026-01-23,False,562,True
+365234,Stalactite Dagger,ecl,1,2026-01-23,2026-01-23,False,9215,True
+365235,Eclipsed Realms,ecl,1,2026-01-23,2026-01-23,False,3070,True
+352638,Morningtide's Light,cecl,2,2026-01-23,2026-01-23,False,6478,True
+352656,Hallowed Fountain // Hallowed Fountain,cecl,13,2002-06-24,2026-11-13,False,61,True
+365909,Boggart Cursecrafter,cecl,1,2026-01-23,2026-01-23,False,8665,True
+365915,Eclipsed Merrow,cecl,1,2026-01-23,2026-01-23,False,18643,True
+365919,Twinflame Travelers,cecl,1,2026-01-23,2026-01-23,False,5159,True
