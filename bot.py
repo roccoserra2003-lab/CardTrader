@@ -15,6 +15,7 @@ import pandas as pd
 import box_ev
 import calendar_events as cal
 import common as C
+import mtgjson_data as MJ
 
 # =====================================================================
 # IMPOSTAZIONI - puoi modificare questi numeri senza toccare il resto
@@ -159,6 +160,7 @@ def inventory_part(today):
     if not inventory:
         return [], {}, stats
     my_user_id = inventory[0]["user_id"]
+    card_info = MJ.load_card_info()          # ristampe, EDHREC, Standard... (creato dall'importazione)
 
     groups = {}
     for item in inventory:
@@ -229,8 +231,11 @@ def inventory_part(today):
             continue
         score, reasons = sell_signal(st)
         if score >= SELL_MIN_SCORE:
-            alerts.append(("sell", str(key),
-                           f"- {name} x{qty}: ora {st['price']:.2f} EUR\n    " + "\n    ".join(reasons)))
+            text = f"- {name} x{qty}: ora {st['price']:.2f} EUR\n    " + "\n    ".join(reasons)
+            context = MJ.risk_labels(card_info.get(bp), today)
+            if context:
+                text += "\n    contesto: " + "; ".join(context)
+            alerts.append(("sell", str(key), text))
 
     stats.update({"monitored": len(groups), "priced": len(snapshots),
                   "days": hist["date"].nunique() if not hist.empty else 0,

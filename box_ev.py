@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 import common as C
+import mtgjson_data as MJ
 
 # =====================================================================
 # IMPOSTAZIONI
@@ -31,6 +32,8 @@ USE_LOWEST_PRICE = True       # True: carte e box valutati all'offerta piu' bass
 OUTLIER_RATIO = 0.75          # se l'offerta piu' bassa e' oltre il 25% sotto la seconda, la considero un errore
 THIN_OFFERS = 3               # sotto 3 offerte il prezzo di una carta e' poco affidabile
 THIN_MARKET_FACTORS = {1: 0.5, 2: 0.75}   # sconto di liquidita' per carte con 1 o 2 offerte (metti 1.0 per toglierlo)
+USE_CARDMARKET_CHECK = True   # controllo incrociato con i prezzi Cardmarket (MTGJSON)
+CM_CAP_RATIO = 0.7            # carta con poche offerte: se Cardmarket vale meno del 70%, uso Cardmarket
 SIMULATIONS = 5000            # box simulati per ogni prodotto
 # =====================================================================
 
@@ -204,15 +207,23 @@ def box_price(blueprint_id):
 
 
 # ----------------------------------------------------------- Modello e EV
-def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None, robust=True):
-    """Trasforma la configurazione MTGJSON + i prezzi in un modello calcolabile."""
+def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None, robust=True, cm_prices=None):
+    """
+    Trasforma la configurazione MTGJSON + i prezzi in un modello calcolabile.
+    Metodo "robust": offerta piu' bassa protetta + controllo con Cardmarket:
+      - nessuna offerta su CardTrader  -> uso il prezzo Cardmarket
+      - poche offerte (<3)             -> uso il piu' basso tra CardTrader e Cardmarket, senza sconto
+      - poche offerte e nessun dato Cardmarket -> sconto di liquidita'
+    """
     uuid2name = uuid2name or {}
+    cm_prices = cm_prices if (robust and cm_prices) else {}
     keep = 1 - SELL_FEE_PCT / 100
+    cm_stats = {"cm_fill": set(), "cm_cap": set(), "cm_ok": set()}
     sheets = {}
     for name, sh in (booster_cfg.get("sheets") or {}).items():
         cards = sh.get("cards") or {}
         is_foil = bool(sh.get("foil"))
-        weights, values, covered, gross, counts = [], [], [], [], []
+        weights, values, covered, gross, counts, cms = [], [], [], [], [], []
         why = {"ok": 0.0, "altro set": 0.0, "senza blueprint": 0.0, "senza offerte": 0.0}
         missing = []
         for uuid, w in cards.items():
@@ -231,6 +242,23 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
                     else:
                         n_list = ref["n"]
                         price = ref["low"] if robust else ref["market"]
+
+            # controllo incrociato con Cardmarket (solo metodo robusto)
+            cm = cm_prices.get(uuid) or {}
+            cm_price = (cm.get("foil") or cm.get("etched") or cm.get("normal")) if is_foil else cm.get("normal")
+            thin_checked = False
+            if cm_price:
+                if price is None:
+                    price, cat, n_list = cm_price, "ok", 0
+                    cm_stats["cm_fill"].add(uuid)
+                elif n_list < THIN_OFFERS:
+                    thin_checked = True
+                    if cm_price < price * CM_CAP_RATIO:
+                        cm_stats["cm_cap"].add(uuid)
+                    else:
+                        cm_stats["cm_ok"].add(uuid)
+                    price = min(price, cm_price)
+
             if price is None and cat in ("senza blueprint", "senza offerte") and _is_basic_land(uuid2name.get(uuid, "")):
                 cat, price = "ok", 0.0          # le terre base valgono ~0: non contano come "mancanti"
             why[cat] += float(w)
@@ -240,7 +268,8 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
             p = price or 0.0
             gross.append(p)
             counts.append(n_list)
-            if robust and n_list:
+            cms.append(cm_price or 0.0)
+            if robust and n_list and not thin_checked:
                 p *= THIN_MARKET_FACTORS.get(n_list, 1.0)      # sconto di liquidita' (1 o 2 offerte)
             values.append(0.0 if p < MIN_CARD_VALUE else p * keep)
             weights.append(float(w))
@@ -255,6 +284,7 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
             "uuids": list(cards.keys()),
             "gross": gross,
             "n_list": counts,
+            "cm": cms,
             "cdf": np.cumsum(w_arr),
             "mean": float((w_arr * v_arr).sum() / total_w),
             "cov": float((w_arr * np.array(covered)).sum() / total_w),
@@ -268,7 +298,7 @@ def build_model(booster_cfg, uuid2sf, sf2bp, prices_nf, prices_f, uuid2name=None
         boosters = [b for lst in boosters.values() for b in lst]
     configs = [{"contents": b.get("contents") or {}, "weight": float(b.get("weight", 1))} for b in boosters]
     configs = [c for c in configs if c["weight"] > 0]
-    return {"sheets": sheets, "configs": configs}
+    return {"sheets": sheets, "configs": configs, "cm_stats": {k: len(v) for k, v in cm_stats.items()}}
 
 
 def coverage_report(model):
@@ -332,13 +362,14 @@ def top_contributors(model, packs, uuid2name, n=5):
         sh = sheets[sname]
         tw = float(sh["weights"].sum())
         for i, uuid in enumerate(sh["uuids"]):
-            e = contrib.setdefault(uuid, {"ev": 0.0, "price": sh["gross"][i], "n": sh["n_list"][i]})
+            e = contrib.setdefault(uuid, {"ev": 0.0, "price": sh["gross"][i], "n": sh["n_list"][i], "cm": sh["cm"][i]})
             e["ev"] += packs * d * float(sh["weights"][i]) / tw * float(sh["values"][i])
     total = sum(v["ev"] for v in contrib.values())
     if total <= 0:
         return [], 0.0, 0.0
     ranked = sorted(contrib.items(), key=lambda kv: -kv[1]["ev"])[:n]
-    top = [(uuid2name.get(u, "carta di un altro set"), v["price"], v["n"], v["ev"] / total) for u, v in ranked]
+    top = [(uuid2name.get(u, "carta di un altro set"), v["price"], v["n"], v["ev"] / total, v["cm"])
+           for u, v in ranked]
     thin = sum(v["ev"] for v in contrib.values() if 0 < v["n"] < THIN_OFFERS) / total
     return top, sum(t[3] for t in top), thin
 
@@ -410,15 +441,37 @@ def evaluate_all(today, notes):
     by_code, by_name, all_exps = ct_expansion_index()
     exp_names = {e["id"]: e["name"] for e in all_exps}
     bp_cache, price_cache, set_cache = {}, {}, {}
+
+    def get_set(code):
+        if code not in set_cache:
+            try:
+                set_cache[code] = load_mtgjson_set(code)
+            except Exception as e:
+                set_cache[code] = None
+                notes.append(f"Set {code}: file MTGJSON non letto ({e})")
+        return set_cache[code]
+
+    # Fase 1: set da valutare e carte che compaiono nelle bustine
+    todo, wanted = [], set()
     for s in recent_sets(today):
+        set_data = get_set(s["code"])
+        booster = (set_data or {}).get("booster") or {}
+        products = [p for p in PRODUCTS if p["booster_key"] in booster]
+        if not products:
+            keys = ", ".join(sorted(booster.keys())) or "nessuna"
+            notes.append(f"{s['name']}: nessuna bustina Play/Collector in MTGJSON (disponibili: {keys}).")
+            continue
+        todo.append((s, set_data, booster, products))
+        for p in products:
+            for sh in (booster[p["booster_key"]].get("sheets") or {}).values():
+                wanted.update((sh.get("cards") or {}).keys())
+
+    # Prezzi Cardmarket di oggi per il controllo incrociato (una sola lettura del file)
+    cm_prices = MJ.fetch_today_cardmarket(wanted, notes) if (USE_CARDMARKET_CHECK and wanted) else {}
+
+    # Fase 2: calcolo
+    for s, set_data, booster, products in todo:
         try:
-            set_data = load_mtgjson_set(s["code"])
-            booster = (set_data or {}).get("booster") or {}
-            products = [p for p in PRODUCTS if p["booster_key"] in booster]
-            if not products:
-                keys = ", ".join(sorted(booster.keys())) or "nessuna"
-                notes.append(f"{s['name']}: nessuna bustina Play/Collector in MTGJSON (disponibili: {keys}).")
-                continue
             exp_id = by_code.get(s["code"].lower()) or by_name.get(s["name"].lower())
             if not exp_id:
                 notes.append(f"{s['name']}: set non trovato su CardTrader.")
@@ -435,13 +488,7 @@ def evaluate_all(today, notes):
             add_cards(set_data)
             exp_ids = [exp_id]
             for cs in companion_sets(s):
-                if cs["code"] not in set_cache:
-                    try:
-                        set_cache[cs["code"]] = load_mtgjson_set(cs["code"])
-                    except Exception as e:
-                        set_cache[cs["code"]] = None
-                        notes.append(f"{s['name']}: set collegato {cs['code']} non letto ({e})")
-                add_cards(set_cache[cs["code"]])
+                add_cards(get_set(cs["code"]))
                 cid = by_code.get(cs["code"].lower()) or by_name.get(cs["name"].lower())
                 if cid and cid not in exp_ids:
                     exp_ids.append(cid)
@@ -473,18 +520,19 @@ def evaluate_all(today, notes):
                     notes.append(f"{s['name']}: nessuna offerta per {p['label']}.")
                     continue
                 model = build_model(booster[p["booster_key"]], uuid2sf, sf2bp, prices_nf, prices_f, uuid2name,
-                                    robust=USE_LOWEST_PRICE)
+                                    robust=USE_LOWEST_PRICE, cm_prices=cm_prices)
                 if not model["sheets"] or not model["configs"]:
                     notes.append(f"{s['name']}: struttura bustina non utilizzabile per {p['label']}.")
                     continue
                 packs, packs_source = packs_per_box(set_data, p["name_words"], p["packs"])
-                price_used = ref["min"] if USE_LOWEST_PRICE else ref["market"]   # box: offerta piu' bassa reale, senza protezione
+                price_used = ref["min"] if USE_LOWEST_PRICE else ref["market"]   # box: offerta piu' bassa reale
                 metrics = evaluate_product(model, packs, price_used, rng)
                 old_model = build_model(booster[p["booster_key"]], uuid2sf, sf2bp, prices_nf, prices_f, uuid2name,
                                         robust=False)
                 metrics["ratio_median"] = (pack_ev_and_coverage(old_model)[0] * packs / ref["market"]
                                            if ref["market"] > 0 else 0.0)
                 metrics["top"], metrics["top_share"], metrics["thin_share"] = top_contributors(model, packs, uuid2name)
+                metrics["cm_stats"] = model["cm_stats"]
                 if metrics["coverage"] < MIN_COVERAGE:
                     summary, details = coverage_report(model)
                     notes.append(f"{s['name']} - {p['label']}: prezzi noti {metrics['coverage'] * 100:.0f}%, "
@@ -532,9 +580,17 @@ def format_line(r):
                  f"{(1 - r['box_price'] / second) * 100:.0f}% sotto la seconda ({second:.0f} EUR): "
                  f"possibile occasione, ma controlla venditore, lingua, condizioni e che sia ancora disponibile")
     if r.get("top"):
-        cards = "; ".join(f"{name} ({price:.0f} EUR, {n} offerte, {share * 100:.0f}% dell'EV)"
-                          for name, price, n, share in r["top"])
-        text += (f"\n    Carte che pesano di piu': {cards}"
-                 f"\n    Le prime {len(r['top'])} valgono il {r['top_share'] * 100:.0f}% dell'EV; "
+        parts = []
+        for name, price, n, share, cm in r["top"]:
+            cm_txt = f"CM {cm:.0f} EUR" if cm else "CM n/d"
+            ct_txt = f"CT {price:.0f} EUR, {n} offerte" if n else "nessuna offerta CT"
+            parts.append(f"{name} ({ct_txt}; {cm_txt}; {share * 100:.0f}% dell'EV)")
+        text += (f"\n    Carte che pesano di piu': " + "; ".join(parts)
+                 + f"\n    Le prime {len(r['top'])} valgono il {r['top_share'] * 100:.0f}% dell'EV; "
                  f"{r.get('thin_share', 0) * 100:.0f}% dell'EV viene da carte con meno di {THIN_OFFERS} offerte")
+    cs = r.get("cm_stats") or {}
+    if any(cs.values()):
+        text += (f"\n    Controllo Cardmarket: {cs.get('cm_fill', 0)} carte senza offerte CT valutate con CM; "
+                 f"{cs.get('cm_cap', 0)} carte con poche offerte ridimensionate a CM; "
+                 f"{cs.get('cm_ok', 0)} con poche offerte ma non penalizzate")
     return text

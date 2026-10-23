@@ -18,6 +18,7 @@ import pandas as pd
 import requests
 
 import common as C
+import mtgjson_data as MJ
 
 PRICES_URL = "https://mtgjson.com/api/v5/AllPrices.json.gz"
 PROVIDERS = ["cardmarket", "tcgplayer", "cardkingdom", "cardsphere", "manapool"]   # in ordine di preferenza
@@ -73,7 +74,7 @@ def scryfall_to_uuid(info, notes):
     by_set = {}
     for bp, (sf, code) in info.items():
         by_set.setdefault(code, []).append(sf)
-    mapping = {}
+    mapping, cards = {}, {}
     for code, sf_ids in by_set.items():
         data = None
         try:
@@ -92,8 +93,37 @@ def scryfall_to_uuid(info, notes):
             sf = (c.get("identifiers") or {}).get("scryfallId")
             if sf:
                 mapping[sf] = c["uuid"]
+                cards[c["uuid"]] = {
+                    "name": c.get("name"), "printings": c.get("printings") or [],
+                    "reserved": bool(c.get("isReserved")), "edhrec": c.get("edhrecRank"),
+                    "standard": (c.get("legalities") or {}).get("standard") == "Legal",
+                }
         time.sleep(0.3)
-    return mapping
+    return mapping, cards
+
+
+def write_card_info(info, sf2uuid, cards, notes):
+    """Salva data/card_info.csv: ristampe, Reserved List, EDHREC e legalita' Standard delle tue carte."""
+    set_dates = {}
+    try:
+        set_dates = {s["code"].lower(): s.get("released_at") for s in C.scryfall_sets() if s.get("released_at")}
+    except Exception as e:
+        notes.append(f"Date dei set non lette da Scryfall ({e}): le ristampe non avranno la data")
+    rows = []
+    for bp, (sf, code) in info.items():
+        card = cards.get(sf2uuid.get(sf))
+        if not card:
+            continue
+        printings = [p.lower() for p in card["printings"]]
+        dates = [set_dates[p] for p in printings if p in set_dates]
+        rows.append({
+            "blueprint_id": bp, "name": card["name"], "set_code": code, "n_printings": len(printings),
+            "first_printing": min(dates) if dates else "", "latest_printing": max(dates) if dates else "",
+            "is_reserved": card["reserved"], "edhrec_rank": card["edhrec"] or "", "standard": card["standard"],
+        })
+    if rows:                                   # non sovrascrivo il file esistente con uno vuoto
+        pd.DataFrame(rows, columns=MJ.INFO_COLS).to_csv(MJ.CARD_INFO_FILE, index=False)
+    return len(rows)
 
 
 def open_prices_stream():
@@ -154,7 +184,7 @@ def run():
     info = blueprint_info(bp_ids, notes)
     stats["con_id_scryfall"] = f"{len(info)}/{len(bp_ids)}"
     print(f"Blueprint con ID Scryfall: {len(info)}/{len(bp_ids)}", flush=True)
-    sf2uuid = scryfall_to_uuid(info, notes)
+    sf2uuid, cards = scryfall_to_uuid(info, notes)
     stats["id_scryfall_collegati"] = len(sf2uuid)
 
     uuid_keys = {}                                  # uuid -> [(blueprint_id, foil), ...]
@@ -163,6 +193,8 @@ def run():
             uuid_keys.setdefault(sf2uuid[info[bp][0]], []).append((bp, foil))
     stats["uuid_voluti"] = len(uuid_keys)
     print(f"Carte collegate a MTGJSON: {len(uuid_keys)}", flush=True)
+    stats["info_carte"] = write_card_info(info, sf2uuid, cards, notes)     # etichette di rischio
+    print(f"Informazioni carte salvate: {stats['info_carte']}", flush=True)
     if not uuid_keys:
         raise RuntimeError("Nessuna delle tue carte e' stata collegata a MTGJSON. Dati: "
                            f"{stats}. Note: {' | '.join(notes[:6])}")
@@ -193,6 +225,7 @@ def run():
         f"Carte con storico: {n_cards} su {len(keys)}",
         f"Date distinte: {n_dates} (dal {df['date'].min()} al {df['date'].max()})",
         f"Fonti usate (carte): {provider_use}. Il livello di prezzo viene riscalato su CardTrader.",
+        f"Informazioni sulle carte (ristampe, EDHREC, Standard): {stats.get('info_carte', 0)} carte.",
     ]
     if n_dates < 20:
         msg.append("Attenzione: poche date distinte, lo storico potrebbe avere cadenza settimanale.")
