@@ -1,43 +1,43 @@
-date,set_code,set_name,product,box_price,ev_net,ratio,prob_profit,median,p10,p90,coverage,ratio_cons,ratio_median
-2026-10-21,fra,Reality Fracture,Play Booster Box,126.62,86.09,0.68,0.13,76.98,48.08,134.62,0.957,,
-2026-10-21,fra,Reality Fracture,Collector Booster Box,319.63,42.23,0.132,0.0,35.78,19.1,70.44,0.589,,
-2026-10-21,hob,The Hobbit,Play Booster Box,128.64,50.33,0.391,0.006,46.97,20.67,84.53,0.974,,
-2026-10-21,hob,The Hobbit,Collector Booster Box,650.27,49.94,0.077,0.0,45.15,23.14,84.91,0.743,,
-2026-10-21,msh,Marvel Super Heroes,Play Booster Box,92.64,48.82,0.527,0.08,40.28,21.55,87.86,0.971,,
-2026-10-21,msh,Marvel Super Heroes,Collector Booster Box,345.64,15.66,0.045,0.0,10.29,3.49,26.66,0.436,,
-2026-10-21,sos,Secrets of Strixhaven,Play Booster Box,106.64,44.17,0.414,0.0,43.24,28.55,61.01,0.898,,
-2026-10-21,sos,Secrets of Strixhaven,Collector Booster Box,380.63,29.36,0.077,0.0,28.28,18.9,40.92,0.6,,
-2026-10-21,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,75.0,31.05,0.414,0.008,28.12,16.03,50.26,0.957,,
-2026-10-21,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,330.63,17.5,0.053,0.0,14.79,9.12,30.68,0.552,,
-2026-10-21,ecl,Lorwyn Eclipsed,Play Booster Box,128.63,68.76,0.535,0.02,66.67,37.85,101.82,0.934,,
-2026-10-21,ecl,Lorwyn Eclipsed,Collector Booster Box,392.49,33.91,0.086,0.0,30.05,12.19,61.1,0.57,,
-2026-10-21,tla,Avatar: The Last Airbender,Play Booster Box,120.64,75.8,0.628,0.127,65.9,37.34,128.26,0.982,,
-2026-10-21,tla,Avatar: The Last Airbender,Collector Booster Box,350.64,41.51,0.118,0.0,33.54,20.43,81.04,0.533,,
-2026-10-22,fra,Reality Fracture,Play Booster Box,126.62,104.82,0.828,0.25,96.59,64.54,156.35,0.998,0.71,
-2026-10-22,fra,Reality Fracture,Collector Booster Box,320.54,277.32,0.865,0.216,239.03,164.86,417.01,0.995,0.766,
-2026-10-22,hob,The Hobbit,Play Booster Box,128.64,67.3,0.523,0.051,61.78,29.35,110.84,1.0,0.474,
-2026-10-22,hob,The Hobbit,Collector Booster Box,650.27,518.44,0.797,0.201,463.41,290.76,852.82,1.0,0.75,
-2026-10-22,msh,Marvel Super Heroes,Play Booster Box,92.64,59.72,0.645,0.136,52.18,29.3,100.5,0.997,0.565,
-2026-10-22,msh,Marvel Super Heroes,Collector Booster Box,345.64,211.81,0.613,0.047,174.51,110.41,293.64,0.93,0.556,
-2026-10-22,sos,Secrets of Strixhaven,Play Booster Box,106.64,72.55,0.68,0.127,66.39,43.18,113.87,0.999,0.538,
-2026-10-22,sos,Secrets of Strixhaven,Collector Booster Box,380.63,215.99,0.567,0.062,166.29,112.07,324.07,0.928,0.511,
-2026-10-22,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,75.0,52.28,0.697,0.123,50.03,30.22,78.21,1.0,0.573,
-2026-10-22,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,330.63,206.88,0.626,0.056,172.58,127.17,273.7,1.0,0.555,
-2026-10-22,ecl,Lorwyn Eclipsed,Play Booster Box,128.63,83.56,0.65,0.06,80.22,49.05,119.17,0.999,0.536,
-2026-10-22,ecl,Lorwyn Eclipsed,Collector Booster Box,392.49,167.85,0.428,0.012,157.23,103.78,229.56,0.993,0.366,
-2026-10-22,tla,Avatar: The Last Airbender,Play Booster Box,120.64,101.6,0.842,0.302,94.8,52.28,165.6,1.0,0.704,
-2026-10-22,tla,Avatar: The Last Airbender,Collector Booster Box,350.64,444.93,1.269,0.388,325.67,236.85,471.06,1.0,1.092,
-2026-10-23,fra,Reality Fracture,Play Booster Box,125.63,101.76,0.81,0.221,95.32,62.19,149.7,1.0,,0.821
-2026-10-23,fra,Reality Fracture,Collector Booster Box,305.64,267.54,0.875,0.241,235.08,163.38,419.43,1.0,,0.868
-2026-10-23,hob,The Hobbit,Play Booster Box,125.34,61.44,0.49,0.041,55.58,26.28,103.07,1.0,,0.523
-2026-10-23,hob,The Hobbit,Collector Booster Box,649.64,492.56,0.758,0.167,438.35,278.56,814.28,1.0,,0.795
-2026-10-23,msh,Marvel Super Heroes,Play Booster Box,92.14,61.91,0.672,0.148,55.8,31.16,101.58,1.0,,0.651
-2026-10-23,msh,Marvel Super Heroes,Collector Booster Box,340.64,262.81,0.772,0.113,234.01,162.53,349.2,1.0,,0.603
-2026-10-23,sos,Secrets of Strixhaven,Play Booster Box,106.28,71.97,0.677,0.117,65.58,42.84,110.06,1.0,,0.692
-2026-10-23,sos,Secrets of Strixhaven,Collector Booster Box,375.64,270.54,0.72,0.115,222.95,150.8,402.45,1.0,,0.519
-2026-10-23,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,70.64,48.21,0.682,0.112,45.79,27.57,72.24,1.0,,0.692
-2026-10-23,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,330.62,186.71,0.565,0.043,156.22,114.71,247.8,1.0,,0.628
-2026-10-23,ecl,Lorwyn Eclipsed,Play Booster Box,128.54,79.98,0.622,0.048,78.15,48.36,115.61,1.0,,0.642
-2026-10-23,ecl,Lorwyn Eclipsed,Collector Booster Box,389.9,176.38,0.452,0.014,163.77,113.88,230.1,1.0,,0.429
-2026-10-23,tla,Avatar: The Last Airbender,Play Booster Box,120.64,92.3,0.765,0.219,84.62,47.95,148.03,1.0,,0.814
-2026-10-23,tla,Avatar: The Last Airbender,Collector Booster Box,350.0,344.02,0.983,0.272,297.95,218.07,432.12,1.0,,1.264
+date,set_code,set_name,product,box_price,ev_net,ratio,prob_profit,median,p10,p90,coverage,ratio_cons,ratio_median,ratio_cm_min
+2026-10-21,fra,Reality Fracture,Play Booster Box,126.62,86.09,0.68,0.13,76.98,48.08,134.62,0.957,,,
+2026-10-21,fra,Reality Fracture,Collector Booster Box,319.63,42.23,0.132,0.0,35.78,19.1,70.44,0.589,,,
+2026-10-21,hob,The Hobbit,Play Booster Box,128.64,50.33,0.391,0.006,46.97,20.67,84.53,0.974,,,
+2026-10-21,hob,The Hobbit,Collector Booster Box,650.27,49.94,0.077,0.0,45.15,23.14,84.91,0.743,,,
+2026-10-21,msh,Marvel Super Heroes,Play Booster Box,92.64,48.82,0.527,0.08,40.28,21.55,87.86,0.971,,,
+2026-10-21,msh,Marvel Super Heroes,Collector Booster Box,345.64,15.66,0.045,0.0,10.29,3.49,26.66,0.436,,,
+2026-10-21,sos,Secrets of Strixhaven,Play Booster Box,106.64,44.17,0.414,0.0,43.24,28.55,61.01,0.898,,,
+2026-10-21,sos,Secrets of Strixhaven,Collector Booster Box,380.63,29.36,0.077,0.0,28.28,18.9,40.92,0.6,,,
+2026-10-21,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,75.0,31.05,0.414,0.008,28.12,16.03,50.26,0.957,,,
+2026-10-21,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,330.63,17.5,0.053,0.0,14.79,9.12,30.68,0.552,,,
+2026-10-21,ecl,Lorwyn Eclipsed,Play Booster Box,128.63,68.76,0.535,0.02,66.67,37.85,101.82,0.934,,,
+2026-10-21,ecl,Lorwyn Eclipsed,Collector Booster Box,392.49,33.91,0.086,0.0,30.05,12.19,61.1,0.57,,,
+2026-10-21,tla,Avatar: The Last Airbender,Play Booster Box,120.64,75.8,0.628,0.127,65.9,37.34,128.26,0.982,,,
+2026-10-21,tla,Avatar: The Last Airbender,Collector Booster Box,350.64,41.51,0.118,0.0,33.54,20.43,81.04,0.533,,,
+2026-10-22,fra,Reality Fracture,Play Booster Box,126.62,104.82,0.828,0.25,96.59,64.54,156.35,0.998,0.71,,
+2026-10-22,fra,Reality Fracture,Collector Booster Box,320.54,277.32,0.865,0.216,239.03,164.86,417.01,0.995,0.766,,
+2026-10-22,hob,The Hobbit,Play Booster Box,128.64,67.3,0.523,0.051,61.78,29.35,110.84,1.0,0.474,,
+2026-10-22,hob,The Hobbit,Collector Booster Box,650.27,518.44,0.797,0.201,463.41,290.76,852.82,1.0,0.75,,
+2026-10-22,msh,Marvel Super Heroes,Play Booster Box,92.64,59.72,0.645,0.136,52.18,29.3,100.5,0.997,0.565,,
+2026-10-22,msh,Marvel Super Heroes,Collector Booster Box,345.64,211.81,0.613,0.047,174.51,110.41,293.64,0.93,0.556,,
+2026-10-22,sos,Secrets of Strixhaven,Play Booster Box,106.64,72.55,0.68,0.127,66.39,43.18,113.87,0.999,0.538,,
+2026-10-22,sos,Secrets of Strixhaven,Collector Booster Box,380.63,215.99,0.567,0.062,166.29,112.07,324.07,0.928,0.511,,
+2026-10-22,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,75.0,52.28,0.697,0.123,50.03,30.22,78.21,1.0,0.573,,
+2026-10-22,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,330.63,206.88,0.626,0.056,172.58,127.17,273.7,1.0,0.555,,
+2026-10-22,ecl,Lorwyn Eclipsed,Play Booster Box,128.63,83.56,0.65,0.06,80.22,49.05,119.17,0.999,0.536,,
+2026-10-22,ecl,Lorwyn Eclipsed,Collector Booster Box,392.49,167.85,0.428,0.012,157.23,103.78,229.56,0.993,0.366,,
+2026-10-22,tla,Avatar: The Last Airbender,Play Booster Box,120.64,101.6,0.842,0.302,94.8,52.28,165.6,1.0,0.704,,
+2026-10-22,tla,Avatar: The Last Airbender,Collector Booster Box,350.64,444.93,1.269,0.388,325.67,236.85,471.06,1.0,1.092,,
+2026-10-23,fra,Reality Fracture,Play Booster Box,125.63,101.76,0.81,0.221,95.32,62.19,149.7,1.0,,0.821,0.664
+2026-10-23,fra,Reality Fracture,Collector Booster Box,305.64,267.54,0.875,0.241,235.08,163.38,419.43,1.0,,0.868,0.69
+2026-10-23,hob,The Hobbit,Play Booster Box,125.34,61.44,0.49,0.041,55.58,26.28,103.07,1.0,,0.523,0.467
+2026-10-23,hob,The Hobbit,Collector Booster Box,649.64,492.56,0.758,0.167,438.35,278.56,814.28,1.0,,0.795,0.692
+2026-10-23,msh,Marvel Super Heroes,Play Booster Box,92.14,61.91,0.672,0.148,55.8,31.16,101.58,1.0,,0.651,0.652
+2026-10-23,msh,Marvel Super Heroes,Collector Booster Box,340.64,262.81,0.772,0.113,234.01,162.53,349.2,1.0,,0.603,0.728
+2026-10-23,sos,Secrets of Strixhaven,Play Booster Box,106.28,71.97,0.677,0.117,65.58,42.84,110.06,1.0,,0.692,0.627
+2026-10-23,sos,Secrets of Strixhaven,Collector Booster Box,375.64,270.54,0.72,0.115,222.95,150.8,402.45,1.0,,0.519,0.69
+2026-10-23,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,70.64,48.21,0.682,0.112,45.79,27.57,72.24,1.0,,0.692,0.648
+2026-10-23,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,330.62,186.71,0.565,0.043,156.22,114.71,247.8,1.0,,0.628,0.525
+2026-10-23,ecl,Lorwyn Eclipsed,Play Booster Box,128.54,79.98,0.622,0.048,78.15,48.36,115.61,1.0,,0.642,0.603
+2026-10-23,ecl,Lorwyn Eclipsed,Collector Booster Box,389.9,176.38,0.452,0.014,163.77,113.88,230.1,1.0,,0.429,0.42
+2026-10-23,tla,Avatar: The Last Airbender,Play Booster Box,120.64,92.3,0.765,0.219,84.62,47.95,148.03,1.0,,0.814,0.729
+2026-10-23,tla,Avatar: The Last Airbender,Collector Booster Box,350.0,344.02,0.983,0.272,297.95,218.07,432.12,1.0,,1.264,0.904
