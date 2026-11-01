@@ -45,8 +45,11 @@ MONTH_RE = "|".join(MONTHS)
 DATE_RE = re.compile(
     rf"({MONTH_RE})\s+(\d{{1,2}})(?:\s*[–\-]\s*(?:({MONTH_RE})\s+)?(\d{{1,2}}))?,?\s+(\d{{4}})"
 )
+# Parola del nome (maiuscola, mai un mese: altrimenti "Pro Tour Roma November" ingloba la data)
+_W = rf"(?!(?:{MONTH_RE})\b)[A-Z][A-Za-z']+"
+_JOIN = r"(?: (?:of|the|and|de|del|la|di|du|des))?"          # connettivi minuscoli: "Edge of Eternities"
 EVENT_NAME_RE = re.compile(
-    r"(Pro Tour [A-Z][A-Za-z']+(?: [A-Z][A-Za-z']+){0,3}"
+    rf"(Pro Tour {_W}(?:{_JOIN} {_W}){{0,3}}"
     r"|Arena Championship \d+|World Championship \d+"
     r"|Regional Championships? \d+|Magic Limited Championship"
     r"|MagicCon:? [A-Z][a-z]+)"
@@ -115,10 +118,15 @@ def _wiki_text(data):
 def parse_tournaments(text, today):
     events, seen = [], set()
     lo, hi = today - timedelta(days=120), today + timedelta(days=400)
+    prev_end = 0
     for m in DATE_RE.finditer(text):
+        # il nome va cercato SOLO tra la data precedente e questa: una data senza nome non deve
+        # "rubare" il nome dell'evento di prima
+        window_start = max(prev_end, m.start() - 160)
+        prev_end = m.end()
         if text[m.end():m.end() + 1] == ")":      # data di pubblicazione di un articolo citato
             continue
-        window = text[max(0, m.start() - 160):m.start()]
+        window = text[window_start:m.start()]
         names = EVENT_NAME_RE.findall(window)
         if not names:
             continue
@@ -160,17 +168,27 @@ def tournament_events(today, notes):
         events.extend(parse_tournaments(text, today))
     if ok == 0:
         notes.append("Lettura tornei non riuscita: nessuna pagina del calendario e' stata letta.")
-        state = C.load_json(STATE_FILE, {})
-        last = state.get("tournament_warning")
-        due = True
-        if last:
-            due = (today - date.fromisoformat(last)).days >= TOURNAMENT_WARNING_EVERY_DAYS
-        if due:
-            notes.append("AVVISO: non riesco a leggere il calendario dei tornei (il resto del bot funziona). "
-                         "Se persiste, il sito potrebbe aver cambiato struttura.")
-            state["tournament_warning"] = today.isoformat()
-            C.save_json(STATE_FILE, state)
+        _warn_throttled(today, notes, "tournament_warning",
+                        "AVVISO: non riesco a leggere il calendario dei tornei (il resto del bot funziona). "
+                        "Se persiste, il sito potrebbe aver cambiato struttura.")
+    elif not events:
+        # pagine lette ma nessun torneo estratto: tipico di un cambio di struttura della pagina
+        notes.append(f"Lettura tornei: {ok} pagine lette ma nessun torneo riconosciuto.")
+        _warn_throttled(today, notes, "tournament_empty_warning",
+                        "AVVISO: ho letto il calendario dei tornei ma non ho riconosciuto nessun evento "
+                        "(il resto del bot funziona). Il formato della pagina potrebbe essere cambiato.")
     return events
+
+
+def _warn_throttled(today, notes, state_key, message):
+    """Aggiunge un AVVISO al massimo una volta ogni TOURNAMENT_WARNING_EVERY_DAYS giorni."""
+    state = C.load_json(STATE_FILE, {})
+    last = state.get(state_key)
+    if last and (today - date.fromisoformat(last)).days < TOURNAMENT_WARNING_EVERY_DAYS:
+        return
+    notes.append(message)
+    state[state_key] = today.isoformat()
+    C.save_json(STATE_FILE, state)
 
 
 # ------------------------------------------------------------- Ban reali
@@ -244,7 +262,7 @@ def collect_events(today, notes, ban_changes=None):
     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=EVENT_COLS)
     df["approx"] = df["approx"].astype(str)
     df = df.drop_duplicates(subset=["type", "name", "start"]).reset_index(drop=True)
-    df.to_csv(EVENTS_FILE, index=False)
+    C.save_csv(df, EVENTS_FILE)
     return df
 
 

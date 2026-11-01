@@ -38,6 +38,14 @@ STATUS_BOX_DETAILS = 2
 
 # Giorni prima di ripetere lo stesso avviso
 COOLDOWN = {"sell": 7, "box": 3, "event": 30}
+
+# Se CardTrader non risponde per questo numero di carte di fila, smetto di chiedere:
+# senza questo limite un'interruzione di CardTrader farebbe durare il bot ore, oltre il timeout del workflow
+MAX_CONSECUTIVE_FAILURES = 5
+
+# Codici di uscita (usati dal workflow per decidere se mandare l'avviso di emergenza su Telegram)
+EXIT_CRASH = 1                # errore grave o messaggio Telegram non consegnato
+EXIT_PARTIAL = 2              # alcune parti sono fallite ma l'elenco degli errori e' gia' arrivato su Telegram
 # =====================================================================
 
 PRICES_FILE = "data/prices.csv"
@@ -155,7 +163,7 @@ def label(name, foil, lang):
 def inventory_part(today):
     today_iso, today_ts = today.isoformat(), pd.Timestamp(today)
     inventory = load_inventory()
-    stats = {"monitored": 0, "priced": 0, "days": 0, "names": set()}
+    stats = {"monitored": 0, "priced": 0, "days": 0, "names": set(), "failed": 0, "aborted": False}
     if not inventory:
         return [], {}, stats
     my_user_id = inventory[0]["user_id"]
@@ -166,10 +174,20 @@ def inventory_part(today):
         groups.setdefault((item["blueprint_id"], item["foil"], item["language"]), []).append(item)
 
     # Prezzi di mercato di oggi (1 chiamata al secondo per rispettare i limiti API)
-    snapshots, new_rows = {}, []
+    snapshots, new_rows, streak = {}, [], 0
     for key, items in groups.items():
         bp, foil, lang = key
-        snap = market_snapshot(bp, foil, lang, my_user_id)
+        try:
+            snap = market_snapshot(bp, foil, lang, my_user_id)
+            streak = 0
+        except Exception as e:                    # un errore su una carta non deve far perdere tutte le altre
+            stats["failed"] += 1
+            streak += 1
+            print(f"Prezzo non letto per {items[0]['name']} ({bp}): {e}", flush=True)
+            if streak >= MAX_CONSECUTIVE_FAILURES:
+                stats["aborted"] = True
+                break
+            continue
         time.sleep(1.1)
         if not snap:
             continue
@@ -180,9 +198,14 @@ def inventory_part(today):
             "min": round(snap["min"], 2), "n_listings": snap["n"],
         })
 
-    # Salva lo storico (se rilanci nello stesso giorno, sostituisce i dati di oggi)
+    # Salva lo storico (se rilanci nello stesso giorno, sostituisce i dati di oggi solo per le carte
+    # riaggiornate: un rilancio parziale non cancella i prezzi di oggi gia' salvati per le altre)
     hist = C.load_csv(PRICES_FILE, PRICE_COLS)
-    hist = hist[hist["date"] != today_iso]
+    new_keys = {(r["blueprint_id"], r["foil"], r["language"]) for r in new_rows}
+    refreshed = pd.Series([(int(b), int(f), l) in new_keys
+                           for b, f, l in zip(hist["blueprint_id"], hist["foil"], hist["language"])],
+                          index=hist.index, dtype=bool)
+    hist = hist[~((hist["date"] == today_iso) & refreshed)]
     new_df = pd.DataFrame(new_rows, columns=PRICE_COLS)
     frames = [f for f in (hist, new_df) if not f.empty]
     hist = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=PRICE_COLS)
@@ -190,7 +213,7 @@ def inventory_part(today):
         hist[col] = hist[col].astype(int)
     for col in ("market", "min", "n_listings"):
         hist[col] = pd.to_numeric(hist[col])
-    hist.to_csv(PRICES_FILE, index=False)
+    C.save_csv(hist, PRICES_FILE)
 
     cm_by_key = {}
     if os.path.exists(CM_FILE):
@@ -267,10 +290,17 @@ def run():
         errors.append(f"Calendario eventi: {e}")
 
     # 2) Inventario e segnali di vendita
-    series_by_key, stats = {}, {"monitored": 0, "priced": 0, "days": 0, "names": set()}
+    series_by_key, stats = {}, {"monitored": 0, "priced": 0, "days": 0, "names": set(), "failed": 0, "aborted": False}
     try:
         inv_alerts, series_by_key, stats = inventory_part(today)
         alerts += inv_alerts
+        if stats.get("aborted"):
+            errors.append(f"Inventario: CardTrader non risponde, letture interrotte dopo "
+                          f"{MAX_CONSECUTIVE_FAILURES} errori consecutivi ({stats['priced']} carte su "
+                          f"{stats['monitored']} lette). Controlla lo stato di CardTrader.")
+        elif stats.get("failed"):
+            notes.append(f"AVVISO: prezzi non letti per {stats['failed']} carte su {stats['monitored']} "
+                         f"(errori temporanei di CardTrader): per quelle carte oggi manca il dato.")
     except Exception as e:
         traceback.print_exc()
         errors.append(f"Inventario: {e}")
@@ -327,16 +357,22 @@ def run():
         status += [f"Nota: {n}" for n in notes if not n.startswith("AVVISO:")][:25]
         body += "\n" + section("STATO", status)
 
+    delivered = True
     if body.strip():
-        C.send_telegram(f"MTG Bot - {today_iso}\n\n{body}")
+        delivered = bool(C.send_telegram(f"MTG Bot - {today_iso}\n\n{body}"))
 
-    if fresh:
+    # Gli avvisi si segnano come "gia' inviati" SOLO se Telegram li ha davvero consegnati,
+    # altrimenti il cooldown li zittirebbe per giorni senza che tu li abbia mai visti
+    if fresh and delivered:
         new_log = pd.DataFrame([{"date": today_iso, "type": a[0], "key": a[1]} for a in fresh])
         frames = [f for f in (log, new_log) if not f.empty]
-        pd.concat(frames, ignore_index=True).to_csv(ALERTS_FILE, index=False)
+        C.save_csv(pd.concat(frames, ignore_index=True), ALERTS_FILE)
 
+    if not delivered:
+        print("ERRORE: il messaggio Telegram non e' stato consegnato; gli avvisi verranno riproposti alla prossima esecuzione.")
+        sys.exit(EXIT_CRASH)
     if errors:
-        sys.exit(1)
+        sys.exit(EXIT_PARTIAL)
 
 
 if __name__ == "__main__":
@@ -350,4 +386,4 @@ if __name__ == "__main__":
             C.send_telegram(f"MTG Bot: errore durante l'esecuzione.\n{e}")
         except Exception:
             pass
-        sys.exit(1)
+        sys.exit(EXIT_CRASH)

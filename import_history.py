@@ -122,7 +122,7 @@ def write_card_info(info, sf2uuid, cards, notes):
             "is_reserved": card["reserved"], "edhrec_rank": card["edhrec"] or "", "standard": card["standard"],
         })
     if rows:                                   # non sovrascrivo il file esistente con uno vuoto
-        pd.DataFrame(rows, columns=MJ.INFO_COLS).to_csv(MJ.CARD_INFO_FILE, index=False)
+        C.save_csv(pd.DataFrame(rows, columns=MJ.INFO_COLS), MJ.CARD_INFO_FILE)
     return len(rows)
 
 
@@ -216,7 +216,7 @@ def run():
                            f"Note: {' | '.join(notes[:6])}")
 
     df = pd.DataFrame(rows).sort_values(["blueprint_id", "foil", "date"])
-    df.to_csv(OUT_FILE, index=False)
+    C.save_csv(df, OUT_FILE)
 
     n_cards = df.groupby(["blueprint_id", "foil"]).ngroups
     n_dates = df["date"].nunique()

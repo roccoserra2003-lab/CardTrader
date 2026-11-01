@@ -1,0 +1,666 @@
+diff --git a/.github/workflows/import-history.yml b/.github/workflows/import-history.yml
+index 0c0dc4d..247e049 100644
+--- a/.github/workflows/import-history.yml
++++ b/.github/workflows/import-history.yml
+@@ -6,6 +6,10 @@ on:
+ permissions:
+   contents: write
+ 
++concurrency:
++  group: mtg-bot-data
++  cancel-in-progress: false
++
+ jobs:
+   import-history:
+     runs-on: ubuntu-latest
+@@ -36,4 +40,10 @@ jobs:
+           git config user.name "mtg-bot"
+           git config user.email "mtg-bot@users.noreply.github.com"
+           git add data
+-          git diff --cached --quiet || (git commit -m "Importa storico MTGJSON" && git pull --rebase && git push)
++          if git diff --cached --quiet; then exit 0; fi
++          git commit -m "Importa storico MTGJSON"
++          for i in 1 2 3; do
++            if git pull --rebase && git push; then exit 0; fi
++            sleep $((i * 5))
++          done
++          exit 1
+diff --git a/.github/workflows/mtg-bot.yml b/.github/workflows/mtg-bot.yml
+index b40e97c..2dca9f5 100644
+--- a/.github/workflows/mtg-bot.yml
++++ b/.github/workflows/mtg-bot.yml
+@@ -8,6 +8,11 @@ on:
+ permissions:
+   contents: write          # serve per salvare lo storico nel repository
+ 
++# Due esecuzioni (es. una manuale e una programmata) non devono mai scrivere i dati insieme
++concurrency:
++  group: mtg-bot-data
++  cancel-in-progress: false
++
+ jobs:
+   run-bot:
+     runs-on: ubuntu-latest
+@@ -26,7 +31,14 @@ jobs:
+         run: pip install -r requirements.txt
+ 
+       - name: Esegui il bot
+-        run: python bot.py
++        id: bot
++        timeout-minutes: 75     # piu' corto del job: se il bot si blocca restano i minuti per salvare e avvisare
++        run: |
++          set +e
++          python bot.py
++          code=$?
++          echo "code=$code" >> "$GITHUB_OUTPUT"
++          exit $code
+         env:
+           CARDTRADER_TOKEN: ${{ secrets.CARDTRADER_TOKEN }}
+           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+@@ -38,4 +50,24 @@ jobs:
+           git config user.name "mtg-bot"
+           git config user.email "mtg-bot@users.noreply.github.com"
+           git add data
+-          git diff --cached --quiet || (git commit -m "Aggiorna storico" && git pull --rebase && git push)
++          if git diff --cached --quiet; then exit 0; fi
++          git commit -m "Aggiorna storico"
++          for i in 1 2 3; do
++            if git pull --rebase && git push; then exit 0; fi
++            sleep $((i * 5))
++          done
++          echo "Impossibile salvare lo storico dopo 3 tentativi" >&2
++          exit 1
++
++      # Il codice 2 significa "errori parziali gia' elencati nel messaggio Telegram del bot": niente doppione.
++      # Tutti gli altri fallimenti (installazione, blocco, crash, Telegram non consegnato...) arrivano da qui.
++      - name: Avviso di emergenza su Telegram
++        if: failure() && steps.bot.outputs.code != '2'
++        env:
++          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
++          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
++        run: |
++          curl -sS --max-time 30 -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
++            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
++            --data-urlencode "text=MTG Bot: esecuzione FALLITA. Dettagli: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
++            > /dev/null || true
+diff --git a/.github/workflows/tests.yml b/.github/workflows/tests.yml
+new file mode 100644
+index 0000000..cfbe210
+--- /dev/null
++++ b/.github/workflows/tests.yml
+@@ -0,0 +1,24 @@
++name: Test
++
++on:
++  push:
++    branches: [main]
++    paths: ["*.py", "tests/**", "requirements*.txt", "pytest.ini", ".github/workflows/tests.yml"]
++  pull_request:
++
++permissions:
++  contents: read
++
++jobs:
++  pytest:
++    runs-on: ubuntu-latest
++    timeout-minutes: 10
++    steps:
++      - uses: actions/checkout@v4
++      - uses: actions/setup-python@v5
++        with:
++          python-version: "3.12"
++          cache: pip
++      - run: pip install -r requirements.txt -r requirements-dev.txt
++      # i test sui dati reali (marker "realdata") servono in locale, non devono bloccare una modifica al codice
++      - run: pytest -q -m "not realdata"
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..428debc
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,6 @@
++__pycache__/
++*.pyc
++.pytest_cache/
++.coverage
++.venv/
++.tmp_*
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..4b74002
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,40 @@
++# CardTrader MTG Bot
++
++Bot Telegram che ogni giorno (GitHub Actions, 06:00 UTC) controlla le carte Magic in vendita su CardTrader e ti scrive solo quando c'e' qualcosa da sapere.
++
++## Cosa fa
++- **VENDI ORA**: segnali di vendita sulle carte che possiedi (prezzo alto rispetto a mediana a 30 giorni, salita a 7 giorni, z-score, massimo a 90 giorni).
++- **EV BOX**: valore atteso netto dei Play/Collector Booster Box recenti (struttura bustine da MTGJSON, prezzi CardTrader controllati con Cardmarket, simulazione di 5000 box).
++- **Calendario**: uscite, rotazione Standard, finestre B&R, ban/unban reali (Scryfall), tornei (wiki).
++
++## File
++| File | Ruolo |
++|---|---|
++| `bot.py` | Programma principale: inventario, segnali, messaggio Telegram |
++| `box_ev.py` | EV dei box e simulazione |
++| `calendar_events.py` | Calendario eventi e ban |
++| `mtgjson_data.py` | Prezzi Cardmarket di oggi, etichette di rischio |
++| `import_history.py` | Importazione una tantum dello storico (workflow manuale) |
++| `common.py` | HTTP con retry, Telegram, scritture atomiche |
++| `data/` | Storico salvato dal bot (CSV/JSON) |
++
++## Configurazione
++Secrets del repository: `CARDTRADER_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
++Le soglie si cambiano all'inizio di `bot.py` e `box_ev.py`.
++
++## Affidabilita'
++- Se CardTrader non risponde per 5 carte di fila il bot si ferma e te lo dice (non resta bloccato per ore).
++- Un errore su una singola carta non fa perdere i prezzi delle altre.
++- Gli avvisi vengono segnati come "inviati" solo se Telegram li ha consegnati.
++- File di dati scritti in modo atomico; due esecuzioni non possono sovrapporsi.
++- Se il workflow fallisce prima/senza che il bot riesca a scriverti, parte un messaggio di emergenza.
++
++Codici di uscita di `bot.py`: `0` ok, `1` errore grave o Telegram non consegnato, `2` errori parziali gia' elencati nel messaggio.
++
++## Test
++```
++pip install -r requirements.txt -r requirements-dev.txt
++pytest -q                    # tutto (inclusi i controlli sui dati reali in data/)
++pytest -q -m "not realdata"  # solo codice (e' quello che gira in CI)
++```
++I test non usano la rete: CardTrader, Scryfall, MTGJSON e Telegram sono simulati.
+diff --git a/bot.py b/bot.py
+index 809b5f7..b7e0894 100644
+--- a/bot.py
++++ b/bot.py
+@@ -38,6 +38,14 @@ STATUS_BOX_DETAILS = 2
+ 
+ # Giorni prima di ripetere lo stesso avviso
+ COOLDOWN = {"sell": 7, "box": 3, "event": 30}
++
++# Se CardTrader non risponde per questo numero di carte di fila, smetto di chiedere:
++# senza questo limite un'interruzione di CardTrader farebbe durare il bot ore, oltre il timeout del workflow
++MAX_CONSECUTIVE_FAILURES = 5
++
++# Codici di uscita (usati dal workflow per decidere se mandare l'avviso di emergenza su Telegram)
++EXIT_CRASH = 1                # errore grave o messaggio Telegram non consegnato
++EXIT_PARTIAL = 2              # alcune parti sono fallite ma l'elenco degli errori e' gia' arrivato su Telegram
+ # =====================================================================
+ 
+ PRICES_FILE = "data/prices.csv"
+@@ -155,7 +163,7 @@ def label(name, foil, lang):
+ def inventory_part(today):
+     today_iso, today_ts = today.isoformat(), pd.Timestamp(today)
+     inventory = load_inventory()
+-    stats = {"monitored": 0, "priced": 0, "days": 0, "names": set()}
++    stats = {"monitored": 0, "priced": 0, "days": 0, "names": set(), "failed": 0, "aborted": False}
+     if not inventory:
+         return [], {}, stats
+     my_user_id = inventory[0]["user_id"]
+@@ -166,10 +174,20 @@ def inventory_part(today):
+         groups.setdefault((item["blueprint_id"], item["foil"], item["language"]), []).append(item)
+ 
+     # Prezzi di mercato di oggi (1 chiamata al secondo per rispettare i limiti API)
+-    snapshots, new_rows = {}, []
++    snapshots, new_rows, streak = {}, [], 0
+     for key, items in groups.items():
+         bp, foil, lang = key
+-        snap = market_snapshot(bp, foil, lang, my_user_id)
++        try:
++            snap = market_snapshot(bp, foil, lang, my_user_id)
++            streak = 0
++        except Exception as e:                    # un errore su una carta non deve far perdere tutte le altre
++            stats["failed"] += 1
++            streak += 1
++            print(f"Prezzo non letto per {items[0]['name']} ({bp}): {e}", flush=True)
++            if streak >= MAX_CONSECUTIVE_FAILURES:
++                stats["aborted"] = True
++                break
++            continue
+         time.sleep(1.1)
+         if not snap:
+             continue
+@@ -180,9 +198,14 @@ def inventory_part(today):
+             "min": round(snap["min"], 2), "n_listings": snap["n"],
+         })
+ 
+-    # Salva lo storico (se rilanci nello stesso giorno, sostituisce i dati di oggi)
++    # Salva lo storico (se rilanci nello stesso giorno, sostituisce i dati di oggi solo per le carte
++    # riaggiornate: un rilancio parziale non cancella i prezzi di oggi gia' salvati per le altre)
+     hist = C.load_csv(PRICES_FILE, PRICE_COLS)
+-    hist = hist[hist["date"] != today_iso]
++    new_keys = {(r["blueprint_id"], r["foil"], r["language"]) for r in new_rows}
++    refreshed = pd.Series([(int(b), int(f), l) in new_keys
++                           for b, f, l in zip(hist["blueprint_id"], hist["foil"], hist["language"])],
++                          index=hist.index, dtype=bool)
++    hist = hist[~((hist["date"] == today_iso) & refreshed)]
+     new_df = pd.DataFrame(new_rows, columns=PRICE_COLS)
+     frames = [f for f in (hist, new_df) if not f.empty]
+     hist = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=PRICE_COLS)
+@@ -190,7 +213,7 @@ def inventory_part(today):
+         hist[col] = hist[col].astype(int)
+     for col in ("market", "min", "n_listings"):
+         hist[col] = pd.to_numeric(hist[col])
+-    hist.to_csv(PRICES_FILE, index=False)
++    C.save_csv(hist, PRICES_FILE)
+ 
+     cm_by_key = {}
+     if os.path.exists(CM_FILE):
+@@ -267,10 +290,17 @@ def run():
+         errors.append(f"Calendario eventi: {e}")
+ 
+     # 2) Inventario e segnali di vendita
+-    series_by_key, stats = {}, {"monitored": 0, "priced": 0, "days": 0, "names": set()}
++    series_by_key, stats = {}, {"monitored": 0, "priced": 0, "days": 0, "names": set(), "failed": 0, "aborted": False}
+     try:
+         inv_alerts, series_by_key, stats = inventory_part(today)
+         alerts += inv_alerts
++        if stats.get("aborted"):
++            errors.append(f"Inventario: CardTrader non risponde, letture interrotte dopo "
++                          f"{MAX_CONSECUTIVE_FAILURES} errori consecutivi ({stats['priced']} carte su "
++                          f"{stats['monitored']} lette). Controlla lo stato di CardTrader.")
++        elif stats.get("failed"):
++            notes.append(f"AVVISO: prezzi non letti per {stats['failed']} carte su {stats['monitored']} "
++                         f"(errori temporanei di CardTrader): per quelle carte oggi manca il dato.")
+     except Exception as e:
+         traceback.print_exc()
+         errors.append(f"Inventario: {e}")
+@@ -327,16 +357,22 @@ def run():
+         status += [f"Nota: {n}" for n in notes if not n.startswith("AVVISO:")][:25]
+         body += "\n" + section("STATO", status)
+ 
++    delivered = True
+     if body.strip():
+-        C.send_telegram(f"MTG Bot - {today_iso}\n\n{body}")
++        delivered = bool(C.send_telegram(f"MTG Bot - {today_iso}\n\n{body}"))
+ 
+-    if fresh:
++    # Gli avvisi si segnano come "gia' inviati" SOLO se Telegram li ha davvero consegnati,
++    # altrimenti il cooldown li zittirebbe per giorni senza che tu li abbia mai visti
++    if fresh and delivered:
+         new_log = pd.DataFrame([{"date": today_iso, "type": a[0], "key": a[1]} for a in fresh])
+         frames = [f for f in (log, new_log) if not f.empty]
+-        pd.concat(frames, ignore_index=True).to_csv(ALERTS_FILE, index=False)
++        C.save_csv(pd.concat(frames, ignore_index=True), ALERTS_FILE)
+ 
++    if not delivered:
++        print("ERRORE: il messaggio Telegram non e' stato consegnato; gli avvisi verranno riproposti alla prossima esecuzione.")
++        sys.exit(EXIT_CRASH)
+     if errors:
+-        sys.exit(1)
++        sys.exit(EXIT_PARTIAL)
+ 
+ 
+ if __name__ == "__main__":
+@@ -350,4 +386,4 @@ if __name__ == "__main__":
+             C.send_telegram(f"MTG Bot: errore durante l'esecuzione.\n{e}")
+         except Exception:
+             pass
+-        sys.exit(1)
++        sys.exit(EXIT_CRASH)
+diff --git a/box_ev.py b/box_ev.py
+index db65c5a..06bd9b8 100644
+--- a/box_ev.py
++++ b/box_ev.py
+@@ -4,6 +4,7 @@ Valore atteso (EV) dei box sigillati.
+ - Prezzi delle carte e del box: CardTrader
+ - EV esatto + simulazione di migliaia di box (distribuzione dei risultati)
+ """
++import re
+ import time
+ from datetime import date, timedelta
+ 
+@@ -92,6 +93,11 @@ def companion_sets(main):
+     return out[:6]
+ 
+ 
++def has_words(name, words):
++    """True se TUTTE le parole compaiono come parole intere ('play' NON deve combaciare con 'display')."""
++    return all(re.search(rf"\b{re.escape(w)}\b", name) for w in words)
++
++
+ def _is_basic_land(name):
+     return str(name).lower().replace("snow-covered ", "").strip() in BASIC_LANDS
+ 
+@@ -107,13 +113,13 @@ def packs_per_box(set_data, words, default):
+     """Numero di bustine per box letto da MTGJSON (cambia da set a set). Ritorna (numero, fonte)."""
+     for sp in set_data.get("sealedProduct") or []:
+         n = str(sp.get("name", "")).lower()
+-        if not all(w in n for w in words) or not ("box" in n or "display" in n):
++        if not has_words(n, words) or not ("box" in n or "display" in n):
+             continue
+         if any(x in n for x in EXCLUDE_WORDS):
+             continue
+         sealed = (sp.get("contents") or {}).get("sealed") or []
+         count = sum(int(x.get("count", 0)) for x in sealed
+-                    if all(w in str(x.get("name", "")).lower() for w in words))
++                    if has_words(str(x.get("name", "")).lower(), words))
+         if count > 0:
+             return count, "mtgjson"
+     return default, "predefinito"
+@@ -173,7 +179,7 @@ def find_box_blueprint(blueprints, words, plain_fallback=False):
+     best = None
+     for b in blueprints:
+         n = str(b.get("name", "")).lower()
+-        if not all(w in n for w in words):
++        if not has_words(n, words):
+             continue
+         if not ("box" in n or "display" in n):
+             continue
+@@ -569,7 +575,7 @@ def save_results(results, today):
+     new = pd.DataFrame(rows, columns=RESULT_COLS)
+     frames = [f for f in (old, new) if not f.empty]
+     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=RESULT_COLS)
+-    df.to_csv(RESULTS_FILE, index=False)
++    C.save_csv(df, RESULTS_FILE)
+ 
+ 
+ def is_alert(r):
+@@ -597,7 +603,7 @@ def format_line(r):
+             cm_txt = f"CM {cm:.0f} EUR" if cm else "CM n/d"
+             ct_txt = f"CT {ct:.0f} EUR, {n} offerte" if ct else "nessuna offerta CT"
+             parts.append(f"{name} ({ct_txt}; {cm_txt}; valutata {price:.0f} EUR; {share * 100:.0f}% dell'EV)")
+-        text += (f"\n    Carte che pesano di piu': " + "; ".join(parts)
++        text += ("\n    Carte che pesano di piu': " + "; ".join(parts)
+                  + f"\n    Le prime {len(r['top'])} valgono il {r['top_share'] * 100:.0f}% dell'EV; "
+                  f"{r.get('thin_share', 0) * 100:.0f}% dell'EV viene da carte con meno di {THIN_OFFERS} offerte")
+     cs = r.get("cm_stats") or {}
+diff --git a/calendar_events.py b/calendar_events.py
+index a8c1e4d..ecb9d53 100644
+--- a/calendar_events.py
++++ b/calendar_events.py
+@@ -45,8 +45,11 @@ MONTH_RE = "|".join(MONTHS)
+ DATE_RE = re.compile(
+     rf"({MONTH_RE})\s+(\d{{1,2}})(?:\s*[–\-]\s*(?:({MONTH_RE})\s+)?(\d{{1,2}}))?,?\s+(\d{{4}})"
+ )
++# Parola del nome (maiuscola, mai un mese: altrimenti "Pro Tour Roma November" ingloba la data)
++_W = rf"(?!(?:{MONTH_RE})\b)[A-Z][A-Za-z']+"
++_JOIN = r"(?: (?:of|the|and|de|del|la|di|du|des))?"          # connettivi minuscoli: "Edge of Eternities"
+ EVENT_NAME_RE = re.compile(
+-    r"(Pro Tour [A-Z][A-Za-z']+(?: [A-Z][A-Za-z']+){0,3}"
++    rf"(Pro Tour {_W}(?:{_JOIN} {_W}){{0,3}}"
+     r"|Arena Championship \d+|World Championship \d+"
+     r"|Regional Championships? \d+|Magic Limited Championship"
+     r"|MagicCon:? [A-Z][a-z]+)"
+@@ -115,10 +118,15 @@ def _wiki_text(data):
+ def parse_tournaments(text, today):
+     events, seen = [], set()
+     lo, hi = today - timedelta(days=120), today + timedelta(days=400)
++    prev_end = 0
+     for m in DATE_RE.finditer(text):
++        # il nome va cercato SOLO tra la data precedente e questa: una data senza nome non deve
++        # "rubare" il nome dell'evento di prima
++        window_start = max(prev_end, m.start() - 160)
++        prev_end = m.end()
+         if text[m.end():m.end() + 1] == ")":      # data di pubblicazione di un articolo citato
+             continue
+-        window = text[max(0, m.start() - 160):m.start()]
++        window = text[window_start:m.start()]
+         names = EVENT_NAME_RE.findall(window)
+         if not names:
+             continue
+@@ -160,19 +168,29 @@ def tournament_events(today, notes):
+         events.extend(parse_tournaments(text, today))
+     if ok == 0:
+         notes.append("Lettura tornei non riuscita: nessuna pagina del calendario e' stata letta.")
+-        state = C.load_json(STATE_FILE, {})
+-        last = state.get("tournament_warning")
+-        due = True
+-        if last:
+-            due = (today - date.fromisoformat(last)).days >= TOURNAMENT_WARNING_EVERY_DAYS
+-        if due:
+-            notes.append("AVVISO: non riesco a leggere il calendario dei tornei (il resto del bot funziona). "
+-                         "Se persiste, il sito potrebbe aver cambiato struttura.")
+-            state["tournament_warning"] = today.isoformat()
+-            C.save_json(STATE_FILE, state)
++        _warn_throttled(today, notes, "tournament_warning",
++                        "AVVISO: non riesco a leggere il calendario dei tornei (il resto del bot funziona). "
++                        "Se persiste, il sito potrebbe aver cambiato struttura.")
++    elif not events:
++        # pagine lette ma nessun torneo estratto: tipico di un cambio di struttura della pagina
++        notes.append(f"Lettura tornei: {ok} pagine lette ma nessun torneo riconosciuto.")
++        _warn_throttled(today, notes, "tournament_empty_warning",
++                        "AVVISO: ho letto il calendario dei tornei ma non ho riconosciuto nessun evento "
++                        "(il resto del bot funziona). Il formato della pagina potrebbe essere cambiato.")
+     return events
+ 
+ 
++def _warn_throttled(today, notes, state_key, message):
++    """Aggiunge un AVVISO al massimo una volta ogni TOURNAMENT_WARNING_EVERY_DAYS giorni."""
++    state = C.load_json(STATE_FILE, {})
++    last = state.get(state_key)
++    if last and (today - date.fromisoformat(last)).days < TOURNAMENT_WARNING_EVERY_DAYS:
++        return
++    notes.append(message)
++    state[state_key] = today.isoformat()
++    C.save_json(STATE_FILE, state)
++
++
+ # ------------------------------------------------------------- Ban reali
+ def fetch_banned(fmt):
+     names, url, params = set(), "https://api.scryfall.com/cards/search", {"q": f"banned:{fmt}", "unique": "cards"}
+@@ -244,7 +262,7 @@ def collect_events(today, notes, ban_changes=None):
+     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=EVENT_COLS)
+     df["approx"] = df["approx"].astype(str)
+     df = df.drop_duplicates(subset=["type", "name", "start"]).reset_index(drop=True)
+-    df.to_csv(EVENTS_FILE, index=False)
++    C.save_csv(df, EVENTS_FILE)
+     return df
+ 
+ 
+diff --git a/common.py b/common.py
+index 4845112..3b359b4 100644
+--- a/common.py
++++ b/common.py
+@@ -2,6 +2,7 @@
+ import json
+ import os
+ import statistics
++import tempfile
+ import time
+ 
+ import pandas as pd
+@@ -13,23 +14,37 @@ USER_AGENT = "MTGPriceBot/2.0 (progetto personale)"
+ 
+ 
+ def env(name):
+-    return os.environ[name].strip()
++    try:
++        return os.environ[name].strip()
++    except KeyError:
++        raise RuntimeError(f"Variabile d'ambiente mancante: {name} "
++                           f"(controlla i Secrets del repository su GitHub)") from None
+ 
+ 
+ # ------------------------------------------------------------------ HTTP
++def _retry_after(r, default):
++    """Secondi da attendere: rispetta l'intestazione Retry-After (max 60 s), altrimenti `default`."""
++    try:
++        return min(60.0, max(0.0, float(getattr(r, "headers", {}).get("Retry-After", default))))
++    except (TypeError, ValueError):
++        return default
++
++
+ def _request(method, url, retries=4, timeout=60, **kwargs):
+     last_error = None
+     for attempt in range(retries):
++        wait = 2 ** attempt * 2
+         try:
+             r = requests.request(method, url, timeout=timeout, **kwargs)
+             if r.status_code == 429 or r.status_code >= 500:
+                 last_error = f"HTTP {r.status_code}"
+-                time.sleep(2 ** attempt * 2)
+-                continue
+-            return r
++                wait = _retry_after(r, wait)
++            else:
++                return r
+         except requests.RequestException as e:
+             last_error = str(e)
+-            time.sleep(2 ** attempt * 2)
++        if attempt < retries - 1:               # niente attesa inutile dopo l'ultimo tentativo
++            time.sleep(wait)
+     raise RuntimeError(f"Richiesta a {url} fallita: {last_error}")
+ 
+ 
+@@ -66,24 +81,65 @@ def scryfall_sets():
+ 
+ 
+ # -------------------------------------------------------------- Telegram
+-def send_telegram(text):
+-    """Invia un messaggio, spezzandolo per righe se troppo lungo."""
++TELEGRAM_LIMIT = 4000          # Telegram accetta al massimo 4096 caratteri per messaggio
++
++
++def split_message(text, limit=TELEGRAM_LIMIT):
++    """Spezza il testo per righe in blocchi <= limit; una riga enorme viene tagliata. Mai blocchi vuoti."""
+     chunks, current = [], ""
+     for line in text.split("\n"):
+-        if len(current) + len(line) + 1 > 3800:
++        while len(line) > limit:
++            if current:
++                chunks.append(current)
++                current = ""
++            chunks.append(line[:limit])
++            line = line[limit:]
++        if len(current) + len(line) + 1 > limit:
+             chunks.append(current)
+             current = ""
+         current += line + "\n"
+     if current.strip():
+         chunks.append(current)
+-    for chunk in chunks:
+-        r = requests.post(
+-            f"https://api.telegram.org/bot{env('TELEGRAM_BOT_TOKEN')}/sendMessage",
+-            data={"chat_id": env("TELEGRAM_CHAT_ID"), "text": chunk, "disable_web_page_preview": True},
+-            timeout=30,
+-        )
+-        if not r.ok:
+-            print("Telegram ha risposto con un errore:", r.status_code, r.text[:200])
++    return [c for c in chunks if c.strip()]
++
++
++def _telegram_retry_after(r, default):
++    try:
++        return min(60.0, float(r.json().get("parameters", {}).get("retry_after", default)))
++    except Exception:
++        return default
++
++
++def send_telegram(text, attempts=3):
++    """
++    Invia un messaggio (spezzato se lungo). Ritorna True solo se TUTTI i pezzi sono arrivati.
++    Riprova su errori di rete, 429 (rispettando retry_after) e 5xx; non riprova su errori 4xx (token/chat errati).
++    """
++    token, chat = env("TELEGRAM_BOT_TOKEN"), env("TELEGRAM_CHAT_ID")
++    delivered = True
++    for chunk in split_message(text):
++        ok = False
++        for attempt in range(attempts):
++            wait = 2 ** attempt
++            try:
++                r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
++                                  data={"chat_id": chat, "text": chunk, "disable_web_page_preview": True},
++                                  timeout=30)
++            except requests.RequestException as e:
++                print("Telegram non raggiungibile:", str(e).replace(token, "***")[:200])
++            else:
++                if r.ok:
++                    ok = True
++                    break
++                print("Telegram ha risposto con un errore:", r.status_code, r.text[:200])
++                if r.status_code == 429:
++                    wait = _telegram_retry_after(r, wait)
++                elif r.status_code < 500:
++                    break                      # errore definitivo (token o chat sbagliati): inutile riprovare
++            if attempt < attempts - 1:
++                time.sleep(wait)
++        delivered = delivered and ok
++    return delivered
+ 
+ 
+ # ---------------------------------------------------------------- Prezzi
+@@ -129,9 +185,27 @@ def load_json(path, default=None):
+     return default
+ 
+ 
++def _atomic_write(path, writer):
++    """Scrive su un file temporaneo e lo rinomina: un crash a meta' scrittura non corrompe il file vero."""
++    folder = os.path.dirname(path) or "."
++    fd, tmp = tempfile.mkstemp(dir=folder, prefix=".tmp_", suffix=os.path.splitext(path)[1])
++    try:
++        with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
++            writer(f)
++        os.replace(tmp, path)
++    except BaseException:
++        if os.path.exists(tmp):
++            os.remove(tmp)
++        raise
++
++
+ def save_json(path, data):
+-    with open(path, "w", encoding="utf-8") as f:
+-        json.dump(data, f, ensure_ascii=False, indent=1)
++    _atomic_write(path, lambda f: json.dump(data, f, ensure_ascii=False, indent=1))
++
++
++def save_csv(df, path):
++    """to_csv(index=False) in modo atomico."""
++    _atomic_write(path, lambda f: df.to_csv(f, index=False))
+ 
+ 
+ def recent_alerts(log, today, days):
+diff --git a/import_history.py b/import_history.py
+index c62d775..6ca1909 100644
+--- a/import_history.py
++++ b/import_history.py
+@@ -122,7 +122,7 @@ def write_card_info(info, sf2uuid, cards, notes):
+             "is_reserved": card["reserved"], "edhrec_rank": card["edhrec"] or "", "standard": card["standard"],
+         })
+     if rows:                                   # non sovrascrivo il file esistente con uno vuoto
+-        pd.DataFrame(rows, columns=MJ.INFO_COLS).to_csv(MJ.CARD_INFO_FILE, index=False)
++        C.save_csv(pd.DataFrame(rows, columns=MJ.INFO_COLS), MJ.CARD_INFO_FILE)
+     return len(rows)
+ 
+ 
+@@ -216,7 +216,7 @@ def run():
+                            f"Note: {' | '.join(notes[:6])}")
+ 
+     df = pd.DataFrame(rows).sort_values(["blueprint_id", "foil", "date"])
+-    df.to_csv(OUT_FILE, index=False)
++    C.save_csv(df, OUT_FILE)
+ 
+     n_cards = df.groupby(["blueprint_id", "foil"]).ngroups
+     n_dates = df["date"].nunique()
+diff --git a/pytest.ini b/pytest.ini
+new file mode 100644
+index 0000000..b519991
+--- /dev/null
++++ b/pytest.ini
+@@ -0,0 +1,4 @@
++[pytest]
++testpaths = tests
++markers =
++    realdata: controlli sui file veri in data/ (utili in locale; non bloccano la CI)
+diff --git a/requirements-dev.txt b/requirements-dev.txt
+new file mode 100644
+index 0000000..e96a830
+--- /dev/null
++++ b/requirements-dev.txt
+@@ -0,0 +1 @@
++pytest>=8,<10
+diff --git a/requirements.txt b/requirements.txt
+index faee327..6ec86c8 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,4 +1,4 @@
+-requests
+-pandas
+-numpy
+-ijson
++requests>=2.31,<3
++pandas>=2.2,<4
++numpy>=1.26,<3
++ijson>=3.2,<4

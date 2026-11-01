@@ -4,6 +4,7 @@ Valore atteso (EV) dei box sigillati.
 - Prezzi delle carte e del box: CardTrader
 - EV esatto + simulazione di migliaia di box (distribuzione dei risultati)
 """
+import re
 import time
 from datetime import date, timedelta
 
@@ -92,6 +93,11 @@ def companion_sets(main):
     return out[:6]
 
 
+def has_words(name, words):
+    """True se TUTTE le parole compaiono come parole intere ('play' NON deve combaciare con 'display')."""
+    return all(re.search(rf"\b{re.escape(w)}\b", name) for w in words)
+
+
 def _is_basic_land(name):
     return str(name).lower().replace("snow-covered ", "").strip() in BASIC_LANDS
 
@@ -107,13 +113,13 @@ def packs_per_box(set_data, words, default):
     """Numero di bustine per box letto da MTGJSON (cambia da set a set). Ritorna (numero, fonte)."""
     for sp in set_data.get("sealedProduct") or []:
         n = str(sp.get("name", "")).lower()
-        if not all(w in n for w in words) or not ("box" in n or "display" in n):
+        if not has_words(n, words) or not ("box" in n or "display" in n):
             continue
         if any(x in n for x in EXCLUDE_WORDS):
             continue
         sealed = (sp.get("contents") or {}).get("sealed") or []
         count = sum(int(x.get("count", 0)) for x in sealed
-                    if all(w in str(x.get("name", "")).lower() for w in words))
+                    if has_words(str(x.get("name", "")).lower(), words))
         if count > 0:
             return count, "mtgjson"
     return default, "predefinito"
@@ -173,7 +179,7 @@ def find_box_blueprint(blueprints, words, plain_fallback=False):
     best = None
     for b in blueprints:
         n = str(b.get("name", "")).lower()
-        if not all(w in n for w in words):
+        if not has_words(n, words):
             continue
         if not ("box" in n or "display" in n):
             continue
@@ -569,7 +575,7 @@ def save_results(results, today):
     new = pd.DataFrame(rows, columns=RESULT_COLS)
     frames = [f for f in (old, new) if not f.empty]
     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=RESULT_COLS)
-    df.to_csv(RESULTS_FILE, index=False)
+    C.save_csv(df, RESULTS_FILE)
 
 
 def is_alert(r):
@@ -597,7 +603,7 @@ def format_line(r):
             cm_txt = f"CM {cm:.0f} EUR" if cm else "CM n/d"
             ct_txt = f"CT {ct:.0f} EUR, {n} offerte" if ct else "nessuna offerta CT"
             parts.append(f"{name} ({ct_txt}; {cm_txt}; valutata {price:.0f} EUR; {share * 100:.0f}% dell'EV)")
-        text += (f"\n    Carte che pesano di piu': " + "; ".join(parts)
+        text += ("\n    Carte che pesano di piu': " + "; ".join(parts)
                  + f"\n    Le prime {len(r['top'])} valgono il {r['top_share'] * 100:.0f}% dell'EV; "
                  f"{r.get('thin_share', 0) * 100:.0f}% dell'EV viene da carte con meno di {THIN_OFFERS} offerte")
     cs = r.get("cm_stats") or {}

@@ -1,4 +1,4 @@
-requests
-pandas
-numpy
-ijson
+requests>=2.31,<3
+pandas>=2.2,<4
+numpy>=1.26,<3
+ijson>=3.2,<4
