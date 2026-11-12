@@ -307,3 +307,17 @@ date,set_code,set_name,product,box_price,ev_net,ratio,prob_profit,median,p10,p90
 2026-11-11,ecl,Lorwyn Eclipsed,Collector Booster Box,389.9,181.68,0.466,0.017,165.59,112.82,237.12,1.0,,0.438,0.425
 2026-11-11,tla,Avatar: The Last Airbender,Play Booster Box,120.64,93.62,0.776,0.225,85.22,47.4,147.52,1.0,,0.809,0.746
 2026-11-11,tla,Avatar: The Last Airbender,Collector Booster Box,350.0,355.18,1.015,0.305,304.17,219.11,447.56,1.0,,1.175,0.925
+2026-11-12,fra,Reality Fracture,Play Booster Box,119.64,85.37,0.714,0.116,79.86,53.26,123.16,1.0,,0.721,0.689
+2026-11-12,fra,Reality Fracture,Collector Booster Box,310.53,221.76,0.714,0.123,195.25,137.83,343.97,1.0,,0.726,0.668
+2026-11-12,hob,The Hobbit,Play Booster Box,113.64,56.7,0.499,0.046,50.45,24.34,95.27,1.0,,0.533,0.484
+2026-11-12,hob,The Hobbit,Collector Booster Box,615.64,475.9,0.773,0.181,423.83,264.23,769.92,1.0,,0.803,0.705
+2026-11-12,msh,Marvel Super Heroes,Play Booster Box,90.44,65.06,0.719,0.194,56.82,31.74,109.36,1.0,,0.69,0.692
+2026-11-12,msh,Marvel Super Heroes,Collector Booster Box,348.64,271.16,0.778,0.131,232.62,161.76,369.11,1.0,,0.614,0.716
+2026-11-12,sos,Secrets of Strixhaven,Play Booster Box,106.64,73.5,0.689,0.126,68.48,44.32,113.13,1.0,,0.684,0.638
+2026-11-12,sos,Secrets of Strixhaven,Collector Booster Box,419.9,270.33,0.644,0.102,226.4,151.55,422.15,1.0,,0.51,0.618
+2026-11-12,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,70.64,49.47,0.7,0.117,46.85,28.94,72.66,1.0,,0.726,0.664
+2026-11-12,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,327.64,194.21,0.593,0.051,164.96,123.27,259.19,1.0,,0.643,0.548
+2026-11-12,ecl,Lorwyn Eclipsed,Play Booster Box,109.99,85.56,0.778,0.207,81.47,45.76,128.36,1.0,,0.769,0.715
+2026-11-12,ecl,Lorwyn Eclipsed,Collector Booster Box,389.64,180.49,0.463,0.015,162.46,109.3,234.43,1.0,,0.438,0.425
+2026-11-12,tla,Avatar: The Last Airbender,Play Booster Box,120.54,93.28,0.774,0.237,86.47,47.61,151.55,1.0,,0.822,0.745
+2026-11-12,tla,Avatar: The Last Airbender,Collector Booster Box,350.0,355.29,1.015,0.316,306.24,221.08,448.59,1.0,,1.174,0.925
