@@ -335,3 +335,19 @@ date,set_code,set_name,product,box_price,ev_net,ratio,prob_profit,median,p10,p90
 2026-11-13,ecl,Lorwyn Eclipsed,Collector Booster Box,389.64,180.34,0.463,0.012,164.21,110.33,237.86,1.0,,0.439,0.425
 2026-11-13,tla,Avatar: The Last Airbender,Play Booster Box,119.99,93.28,0.777,0.231,86.91,47.59,150.67,1.0,,0.822,0.748
 2026-11-13,tla,Avatar: The Last Airbender,Collector Booster Box,350.0,355.29,1.015,0.309,305.4,220.78,452.57,1.0,,1.174,0.927
+2026-11-14,trk,Star Trek,Play Booster Box,109.49,100.03,0.914,0.329,96.13,65.93,140.43,1.0,,0.965,0.69
+2026-11-14,trk,Star Trek,Collector Booster Box,395.64,514.08,1.299,0.699,461.89,322.96,769.26,1.0,,1.423,1.217
+2026-11-14,fra,Reality Fracture,Play Booster Box,115.12,85.82,0.746,0.16,80.6,54.18,125.55,1.0,,0.727,0.706
+2026-11-14,fra,Reality Fracture,Collector Booster Box,310.63,219.74,0.707,0.116,195.17,138.23,326.61,1.0,,0.717,0.657
+2026-11-14,hob,The Hobbit,Play Booster Box,120.64,57.15,0.474,0.033,51.52,24.2,95.8,1.0,,0.503,0.457
+2026-11-14,hob,The Hobbit,Collector Booster Box,600.64,474.72,0.79,0.202,429.55,271.13,772.39,1.0,,0.811,0.72
+2026-11-14,msh,Marvel Super Heroes,Play Booster Box,89.64,63.76,0.711,0.194,55.85,30.35,108.53,1.0,,0.687,0.687
+2026-11-14,msh,Marvel Super Heroes,Collector Booster Box,348.64,271.78,0.78,0.127,232.45,161.15,367.25,1.0,,0.614,0.713
+2026-11-14,sos,Secrets of Strixhaven,Play Booster Box,106.64,73.68,0.691,0.117,67.71,43.97,110.36,1.0,,0.682,0.639
+2026-11-14,sos,Secrets of Strixhaven,Collector Booster Box,419.9,271.6,0.647,0.096,224.84,152.45,410.66,1.0,,0.515,0.619
+2026-11-14,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,70.64,49.15,0.696,0.121,47.09,28.49,72.92,1.0,,0.74,0.665
+2026-11-14,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,320.63,193.24,0.603,0.064,164.49,121.11,268.52,1.0,,0.643,0.561
+2026-11-14,ecl,Lorwyn Eclipsed,Play Booster Box,109.99,84.75,0.771,0.2,79.95,46.54,126.94,1.0,,0.803,0.72
+2026-11-14,ecl,Lorwyn Eclipsed,Collector Booster Box,389.64,181.09,0.465,0.015,164.63,110.97,235.68,1.0,,0.485,0.427
+2026-11-14,tla,Avatar: The Last Airbender,Play Booster Box,120.63,93.41,0.774,0.229,86.29,48.14,151.06,1.0,,0.835,0.745
+2026-11-14,tla,Avatar: The Last Airbender,Collector Booster Box,350.0,357.57,1.022,0.318,307.05,221.96,454.25,1.0,,1.178,0.931
