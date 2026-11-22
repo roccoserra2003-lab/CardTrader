@@ -453,3 +453,17 @@ date,set_code,set_name,product,box_price,ev_net,ratio,prob_profit,median,p10,p90
 2026-11-21,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,320.63,193.01,0.602,0.057,163.39,119.92,266.67,1.0,,0.648,0.564
 2026-11-21,ecl,Lorwyn Eclipsed,Play Booster Box,109.99,87.65,0.797,0.212,84.88,49.4,128.68,1.0,,0.817,0.756
 2026-11-21,ecl,Lorwyn Eclipsed,Collector Booster Box,379.64,181.53,0.478,0.012,164.91,112.33,236.31,1.0,,0.45,0.443
+2026-11-22,trk,Star Trek,Play Booster Box,109.54,98.36,0.898,0.311,95.9,64.3,136.15,1.0,,0.933,0.726
+2026-11-22,trk,Star Trek,Collector Booster Box,366.64,10259.6,27.983,0.347,331.3,245.16,477.29,1.0,,19.013,27.961
+2026-11-22,fra,Reality Fracture,Play Booster Box,114.64,81.02,0.707,0.115,76.67,51.27,117.8,1.0,,0.693,0.675
+2026-11-22,fra,Reality Fracture,Collector Booster Box,285.6,204.66,0.717,0.114,178.2,129.2,299.22,1.0,,0.73,0.664
+2026-11-22,hob,The Hobbit,Play Booster Box,120.64,56.73,0.47,0.033,51.9,25.23,96.21,1.0,,0.493,0.463
+2026-11-22,hob,The Hobbit,Collector Booster Box,595.64,460.17,0.773,0.186,410.32,256.19,744.45,1.0,,0.799,0.717
+2026-11-22,msh,Marvel Super Heroes,Play Booster Box,90.57,64.62,0.713,0.168,57.07,32.73,102.85,1.0,,0.699,0.684
+2026-11-22,msh,Marvel Super Heroes,Collector Booster Box,348.64,265.02,0.76,0.114,233.89,164.07,357.21,1.0,,0.582,0.711
+2026-11-22,sos,Secrets of Strixhaven,Play Booster Box,106.64,75.09,0.704,0.132,69.91,46.42,113.72,1.0,,0.695,0.649
+2026-11-22,sos,Secrets of Strixhaven,Collector Booster Box,419.9,276.64,0.659,0.104,231.29,158.54,429.79,1.0,,0.537,0.624
+2026-11-22,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,70.64,47.57,0.673,0.096,45.18,27.03,70.15,1.0,,0.722,0.652
+2026-11-22,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,320.63,194.12,0.605,0.05,165.02,120.77,260.34,1.0,,0.649,0.565
+2026-11-22,ecl,Lorwyn Eclipsed,Play Booster Box,109.99,85.34,0.776,0.209,82.45,48.06,127.33,1.0,,0.84,0.733
+2026-11-22,ecl,Lorwyn Eclipsed,Collector Booster Box,379.64,182.46,0.481,0.012,166.56,112.07,236.88,1.0,,0.542,0.443
