@@ -481,3 +481,17 @@ date,set_code,set_name,product,box_price,ev_net,ratio,prob_profit,median,p10,p90
 2026-11-23,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,320.63,193.84,0.605,0.064,164.95,120.34,278.07,1.0,,0.648,0.565
 2026-11-23,ecl,Lorwyn Eclipsed,Play Booster Box,109.99,85.27,0.775,0.197,82.36,49.3,124.95,1.0,,0.822,0.74
 2026-11-23,ecl,Lorwyn Eclipsed,Collector Booster Box,379.64,182.72,0.481,0.015,166.41,111.93,242.62,1.0,,0.496,0.443
+2026-11-24,trk,Star Trek,Play Booster Box,110.54,100.9,0.913,0.34,97.18,64.64,142.22,1.0,,0.952,0.729
+2026-11-24,trk,Star Trek,Collector Booster Box,359.99,10239.98,28.445,0.292,312.4,228.64,442.89,1.0,,19.0,28.373
+2026-11-24,fra,Reality Fracture,Play Booster Box,114.64,69.07,0.603,0.056,63.46,40.88,102.96,1.0,,0.594,0.59
+2026-11-24,fra,Reality Fracture,Collector Booster Box,280.63,193.71,0.69,0.109,170.09,118.21,288.84,1.0,,0.689,0.64
+2026-11-24,hob,The Hobbit,Play Booster Box,121.64,49.16,0.404,0.023,43.91,19.04,87.29,1.0,,0.42,0.4
+2026-11-24,hob,The Hobbit,Collector Booster Box,595.53,446.32,0.749,0.173,396.76,247.59,727.07,1.0,,0.781,0.702
+2026-11-24,msh,Marvel Super Heroes,Play Booster Box,90.57,57.94,0.64,0.134,50.64,27.63,98.37,1.0,,0.601,0.627
+2026-11-24,msh,Marvel Super Heroes,Collector Booster Box,348.64,264.14,0.758,0.114,234.46,164.25,356.43,1.0,,0.592,0.708
+2026-11-24,sos,Secrets of Strixhaven,Play Booster Box,106.64,59.87,0.561,0.069,53.71,33.17,95.7,1.0,,0.537,0.538
+2026-11-24,sos,Secrets of Strixhaven,Collector Booster Box,419.9,270.74,0.645,0.092,223.79,152.54,404.13,1.0,,0.518,0.618
+2026-11-24,tmt,Teenage Mutant Ninja Turtles,Play Booster Box,70.64,42.91,0.607,0.072,40.8,22.97,66.2,1.0,,0.631,0.594
+2026-11-24,tmt,Teenage Mutant Ninja Turtles,Collector Booster Box,320.63,190.0,0.593,0.054,160.76,117.64,259.17,1.0,,0.638,0.556
+2026-11-24,ecl,Lorwyn Eclipsed,Play Booster Box,109.99,76.36,0.694,0.128,71.96,39.43,115.01,1.0,,0.665,0.668
+2026-11-24,ecl,Lorwyn Eclipsed,Collector Booster Box,379.64,178.86,0.471,0.016,162.77,107.91,238.37,1.0,,0.45,0.437
